@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#122C43">
+<title>震感来袭！——防震减灾生存挑战</title>
+<style>
+/* 基础 */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --navy:#122C43; --navy2:#1B3A57; --teal:#1FA6A0; --teal-d:#157f7a; --teal-l:#E3F4F3;
+  --orange:#F2A34A; --orange-d:#D9822B; --orange-l:#FCEFD9;
+  --bg:#F4F7F9; --ink:#33495A; --ink-l:#6B7F8F; --ok:#2E9E5B; --ok-l:#E4F4EA;
+  --warn:#D95F43; --warn-l:#FBE9E4; --card:#FFFFFF; --line:#DCE5EC;
+  --r:16px; --shadow:0 6px 18px rgba(18,44,67,.10);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  background:#0E2233; color:var(--ink); overflow-x:hidden;
+}
+#app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--bg);position:relative;display:flex;flex-direction:column;
+  box-shadow:0 0 40px rgba(0,0,0,.35)}
+.screen{display:none;flex-direction:column;min-height:100dvh;animation:fadeUp .28s ease}
+.screen.on{display:flex}
+.wrap{padding:18px 16px 28px;flex:1;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{line-height:1.35}
+p{line-height:1.7}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img,svg{display:block;max-width:100%}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:8px}
+
+/* 按钮 */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;
+  padding:12px 18px;border-radius:14px;font-size:17px;font-weight:700;letter-spacing:.02em;
+  transition:transform .12s ease, box-shadow .12s ease, background .12s ease;user-select:none}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff;box-shadow:0 6px 14px rgba(31,166,160,.35)}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange-d));color:#fff;box-shadow:0 6px 14px rgba(242,163,74,.35)}
+.btn-ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-sm{min-height:42px;font-size:15px;padding:8px 14px;border-radius:12px;width:auto}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn-row .btn{flex:1;min-width:0}
+
+/* 顶栏 */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;
+  background:var(--navy);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 12px 10px}
+.topbar .tb-btn{display:flex;align-items:center;gap:4px;color:#fff;font-size:15px;font-weight:600;
+  padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.10);white-space:nowrap}
+.topbar .tb-btn:active{background:rgba(255,255,255,.22)}
+.topbar .tb-title{flex:1;text-align:center;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score-chip{background:rgba(242,163,74,.18);border:1px solid rgba(242,163,74,.55);color:#FBD9A8;
+  font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.score-chip b{color:var(--orange)}
+
+/* 封面 */
+#scr-cover{background:linear-gradient(180deg,#122C43 0%,#1B3A57 62%,#1FA6A0 130%);color:#fff}
+#scr-cover .wrap{justify-content:flex-start;gap:10px;padding-top:calc(22px + env(safe-area-inset-top))}
+.cover-hero{border-radius:22px;overflow:hidden;box-shadow:var(--shadow);background:#0E2233}
+.cover-kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.18em;color:#8FD8D3;font-weight:700}
+.cover-title{font-size:40px;font-weight:900;letter-spacing:.04em;text-shadow:0 4px 14px rgba(0,0,0,.35)}
+.cover-sub{font-size:20px;font-weight:700;color:#FBD9A8}
+.cover-desc{font-size:15px;color:#D9E5EE;max-width:340px}
+.cover-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.cover-badge{font-size:12px;font-weight:700;color:#CFE3EF;background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.18);padding:5px 10px;border-radius:999px}
+
+/* 通用卡片 */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.notice{background:var(--orange-l);border:1.5px solid var(--orange);border-radius:var(--r);padding:14px 16px;
+  font-size:14px;color:#7A5218;line-height:1.7}
+.notice b{color:#9A6212}
+.notice.teal{background:var(--teal-l);border-color:var(--teal);color:#0E5A56}
+.notice.teal b{color:var(--teal-d)}
+.page-title{font-size:24px;font-weight:900;color:var(--navy)}
+.page-sub{font-size:14px;color:var(--ink-l)}
+
+/* 地图 */
+.map-list{display:flex;flex-direction:column;gap:0;position:relative;padding-left:8px}
+.map-list::before{content:"";position:absolute;left:27px;top:26px;bottom:26px;width:4px;border-radius:4px;background:var(--line)}
+.node{display:flex;gap:14px;align-items:center;padding:12px 4px;position:relative;text-align:left;width:100%}
+.node-dot{flex:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:16px;background:#fff;border:3px solid var(--line);color:var(--ink-l);position:relative;z-index:1}
+.node.unlocked .node-dot{border-color:var(--teal);color:var(--teal-d);box-shadow:0 0 0 6px rgba(31,166,160,.15);animation:pulse 1.8s infinite}
+.node.done .node-dot{background:var(--teal);border-color:var(--teal);color:#fff}
+.node.locked{opacity:.62}
+.node.locked .node-dot{background:#E8EEF2}
+.node-body{flex:1;background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 3px 10px rgba(18,44,67,.07);
+  display:flex;align-items:center;gap:10px;border:2px solid transparent}
+.node.unlocked .node-body{border-color:rgba(31,166,160,.45)}
+.node.done .node-body{border-color:rgba(31,166,160,.25)}
+.node-name{font-size:16px;font-weight:800;color:var(--navy)}
+.node-tag{font-size:12px;color:var(--ink-l);margin-top:2px}
+.node-side{font-size:12px;font-weight:800;color:var(--teal-d);white-space:nowrap;text-align:right}
+.node-side.locked-t{color:var(--ink-l)}
+.progress-pill{display:flex;align-items:center;gap:10px;background:#fff;border-radius:999px;padding:10px 16px;box-shadow:var(--shadow)}
+.progress-pill .bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress-pill .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),#37C6BF);border-radius:99px;transition:width .5s ease}
+.progress-pill b{font-size:13px;color:var(--navy);white-space:nowrap}
+
+/* 关卡 */
+.lv-body{display:flex;flex-direction:column;gap:12px}
+.scene-wrap{background:linear-gradient(180deg,#EAF3F7,#DFEAF0);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);position:relative}
+.scene-wrap .shake-layer{width:100%}
+.scene-wrap.shaking .shake-layer{animation:shake .55s linear infinite}
+.scene-note{min-height:22px;font-size:13px;color:var(--orange-d);font-weight:700;text-align:center}
+.story{font-size:15.5px;background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 3px 10px rgba(18,44,67,.06);line-height:1.75}
+.story b{color:var(--navy)}
+.q-banner{display:flex;align-items:center;gap:8px}
+.q-banner .lvl-pill{background:var(--navy);color:#fff;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.q-banner .lvl-pill.shaking-pill{background:var(--orange);animation:pulse 1.2s infinite}
+.question{font-size:18px;font-weight:800;color:var(--navy)}
+.hint-btn{align-self:flex-start;display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:var(--teal-d);
+  background:var(--teal-l);border:1.5px dashed var(--teal);padding:8px 14px;border-radius:999px}
+.hint-btn[disabled]{opacity:.5}
+.hint-panel{background:var(--teal-l);border-left:4px solid var(--teal);border-radius:10px;padding:10px 14px;font-size:14px;color:#0E5A56;animation:fadeUp .25s ease}
+.options{display:flex;flex-direction:column;gap:10px}
+.option-btn{display:flex;gap:12px;align-items:flex-start;text-align:left;background:#fff;border:2px solid var(--line);
+  border-radius:14px;padding:14px 14px;font-size:15.5px;line-height:1.6;color:var(--ink);transition:all .15s ease;position:relative}
+.option-btn:active{transform:scale(.98)}
+.option-btn .opt-key{flex:none;width:28px;height:28px;border-radius:9px;background:var(--bg);color:var(--navy);
+  font-weight:900;display:flex;align-items:center;justify-content:center;font-size:14px;margin-top:1px}
+.option-btn:hover{border-color:var(--teal)}
+.option-btn.picked{border-color:var(--teal);background:var(--teal-l)}
+.option-btn.picked .opt-key{background:var(--teal);color:#fff}
+.option-btn.wrong-pick{border-color:var(--warn);background:var(--warn-l);opacity:.75}
+.option-btn.wrong-pick .opt-key{background:var(--warn);color:#fff}
+.option-btn[disabled]{pointer-events:none}
+.route-tip{font-size:14px;font-weight:700;color:var(--orange-d);background:var(--orange-l);border-radius:10px;padding:10px 14px;text-align:center}
+</style>
+<style>
+/* 弹层通用 */
+.overlay{position:fixed;inset:0;z-index:60;background:rgba(14,34,51,.62);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease}
+.dialog{background:#fff;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.3);width:100%;max-width:420px;
+  max-height:86dvh;overflow-y:auto;padding:22px 20px;display:flex;flex-direction:column;gap:14px;animation:popIn .28s cubic-bezier(.2,1.4,.4,1)}
+.dialog h3{font-size:20px;font-weight:900;color:var(--navy);text-align:center}
+.dialog .dlg-text{font-size:15px;color:var(--ink);line-height:1.7;text-align:center}
+.howto-steps{display:flex;flex-direction:column;gap:10px;counter-reset:st}
+.howto-steps li{list-style:none;display:flex;gap:12px;align-items:center;background:var(--bg);border-radius:12px;padding:12px 14px;font-size:15px;font-weight:600;color:var(--ink)}
+.howto-steps li::before{counter-increment:st;content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;
+  background:var(--teal);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:14px}
+
+/* 答题反馈层 */
+.fb-card{background:#fff;border-radius:20px;width:100%;max-width:420px;padding:24px 20px 20px;
+  display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;animation:popIn .3s cubic-bezier(.2,1.4,.4,1);
+  max-height:86dvh;overflow-y:auto}
+.fb-icon{width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;animation:popIn .4s .05s both}
+.fb-icon.ok{background:var(--ok-l)}
+.fb-icon.no{background:var(--warn-l)}
+.fb-icon.hint{background:var(--orange-l)}
+.fb-title{font-size:20px;font-weight:900}
+.fb-title.ok{color:var(--ok)} .fb-title.no{color:var(--warn)} .fb-title.hint{color:var(--orange-d)}
+.fb-text{font-size:15px;line-height:1.75;color:var(--ink)}
+.fb-know{background:var(--teal-l);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.7;color:#0E5A56;text-align:left;width:100%}
+.fb-know b{color:var(--teal-d)}
+.fb-score{font-size:17px;font-weight:900;color:var(--orange-d);background:var(--orange-l);padding:8px 18px;border-radius:999px}
+.fb-btns{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:2px}
+
+/* 单关通关 / 主线通关 */
+.big-hero{background:linear-gradient(160deg,var(--navy),var(--navy2));border-radius:22px;color:#fff;
+  padding:26px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;box-shadow:var(--shadow)}
+.big-hero .hero-icon{width:76px;height:76px;border-radius:50%;background:rgba(31,166,160,.22);display:flex;align-items:center;justify-content:center;animation:popIn .5s both}
+.big-hero h2{font-size:24px;font-weight:900}
+.big-hero p{font-size:14.5px;color:#D9E5EE;line-height:1.7}
+.lc-score{font-size:38px;font-weight:900;color:var(--orange)}
+.rule-note{font-size:12.5px;color:var(--ink-l);text-align:center}
+.know-chip{display:flex;gap:10px;align-items:flex-start;background:var(--teal-l);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.7;color:#0E5A56}
+.know-chip .kc-tag{flex:none;background:var(--teal);color:#fff;font-size:12px;font-weight:800;padding:3px 8px;border-radius:8px;margin-top:2px}
+
+/* 徽章 */
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.badge-item{background:#fff;border-radius:14px;box-shadow:0 3px 10px rgba(18,44,67,.07);padding:12px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.badge-item .b-icon{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--teal-l)}
+.badge-item.locked .b-icon{background:#EDF1F4}
+.badge-item.locked .b-icon svg{filter:grayscale(1);opacity:.55}
+.badge-item.locked{opacity:.75}
+.badge-item .b-name{font-size:13px;font-weight:800;color:var(--navy)}
+.badge-item .b-cond{font-size:11px;color:var(--ink-l);line-height:1.5}
+.badge-item.got .b-name{color:var(--teal-d)}
+.badge-item.new-got{animation:badgePop .6s cubic-bezier(.2,1.6,.4,1) both}
+.new-badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.new-badges .nb{display:flex;align-items:center;gap:6px;background:var(--orange-l);border:1.5px solid var(--orange);
+  color:#9A6212;font-size:13px;font-weight:800;padding:6px 12px;border-radius:999px;animation:badgePop .6s both}
+
+/* 小游戏 */
+.mini-status{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.mini-status.todo{background:var(--bg);color:var(--ink-l)}
+.mini-status.done{background:var(--ok-l);color:var(--ok)}
+.mini-status.skip{background:#EDF1F4;color:var(--ink-l)}
+.mini-card{display:flex;flex-direction:column;gap:8px;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:16px;text-align:left;width:100%}
+.mini-card .mc-head{display:flex;align-items:center;gap:10px}
+.mini-card .mc-ic{flex:none;width:44px;height:44px;border-radius:12px;background:var(--teal-l);display:flex;align-items:center;justify-content:center}
+.mini-card h4{font-size:17px;font-weight:900;color:var(--navy);flex:1}
+.mini-card p{font-size:13.5px;color:var(--ink-l);line-height:1.6}
+.find-wrap{position:relative}
+.hotspot{cursor:pointer}
+.hotspot .hs-ring{opacity:0;transition:opacity .25s}
+.hotspot.found .hs-ring{opacity:1}
+.hotspot.found{cursor:default}
+.hotspot .hs-hit{fill:transparent}
+.hint-flash{animation:hintFlash 1s ease 3}
+.count-pill{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border-radius:999px;
+  padding:9px 16px;font-size:14px;font-weight:800;color:var(--navy);box-shadow:var(--shadow)}
+.count-pill b{color:var(--teal-d);font-size:17px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);z-index:80;
+  background:var(--navy);color:#fff;font-size:14px;font-weight:700;padding:11px 20px;border-radius:999px;
+  box-shadow:0 8px 22px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:all .25s ease;max-width:86%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.item-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item-card{display:flex;flex-direction:column;align-items:center;gap:8px;background:#fff;border:2.5px solid var(--line);
+  border-radius:14px;padding:14px 10px;transition:all .15s ease;text-align:center}
+.item-card:active{transform:scale(.96)}
+.item-card .ic{width:52px;height:52px}
+.item-card .nm{font-size:14px;font-weight:800;color:var(--navy);line-height:1.4}
+.item-card .mark{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;display:none;align-items:center;justify-content:center}
+.item-card{position:relative}
+.item-card.sel{border-color:var(--teal);background:var(--teal-l)}
+.item-card.sel .mark{display:flex;background:var(--teal)}
+.item-card.sel.danger-pick{border-color:var(--orange);background:var(--orange-l)}
+.item-card.sel.danger-pick .mark{background:var(--orange)}
+.pack-view{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:14px;display:flex;gap:12px;align-items:center}
+.pack-view .pk-ic{flex:none;width:56px;height:56px}
+.pack-view .pk-info{flex:1}
+.pack-view .pk-count{font-size:15px;font-weight:900;color:var(--navy)}
+.pack-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;min-height:24px}
+.pack-chips span{font-size:12px;font-weight:700;background:var(--teal-l);color:var(--teal-d);padding:3px 9px;border-radius:999px;animation:popIn .2s}
+.result-line{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:12px;padding:11px 14px;font-size:14.5px}
+.result-line b{font-size:16px}
+.result-line .ok-t{color:var(--ok)} .result-line .warn-t{color:var(--warn)} .result-line .mut-t{color:var(--ink-l)}
+.fb-list{display:flex;flex-direction:column;gap:8px;width:100%}
+.fb-list .fl-item{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.6;color:var(--ink);text-align:left}
+.fb-list .fl-item b{color:var(--orange-d)}
+.fb-list .fl-item.miss b{color:var(--teal-d)}
+</style>
+<style>
+/* 成绩页 */
+.total-hero{background:linear-gradient(160deg,var(--navy),var(--navy2));border-radius:22px;color:#fff;padding:24px 20px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:var(--shadow);text-align:center}
+.total-hero .t-num{font-size:52px;font-weight:900;color:var(--orange);line-height:1}
+.total-hero .t-max{font-size:15px;color:#C9D9E4;font-weight:700}
+.total-bar{width:100%;height:12px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;margin-top:6px}
+.total-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--orange),#F6C177);border-radius:99px;transition:width .8s ease}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-box{background:#fff;border-radius:14px;box-shadow:0 3px 10px rgba(18,44,67,.07);padding:13px 8px;text-align:center}
+.stat-box .sv{font-size:21px;font-weight:900;color:var(--navy)}
+.stat-box .sl{font-size:12px;color:var(--ink-l);margin-top:3px}
+.grade-card{background:linear-gradient(135deg,#fff,var(--teal-l));border:2px solid var(--teal);border-radius:16px;padding:16px;text-align:center}
+.grade-card .g-name{font-size:22px;font-weight:900;color:var(--teal-d)}
+.grade-card .g-desc{font-size:14px;color:var(--ink);margin-top:8px;line-height:1.7}
+.section-h{font-size:17px;font-weight:900;color:var(--navy);display:flex;align-items:center;gap:8px}
+.review-card{background:#fff;border-radius:14px;box-shadow:0 3px 10px rgba(18,44,67,.07);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.review-card .rv-scene{font-size:13px;font-weight:800;color:var(--teal-d)}
+.review-card .rv-line{font-size:14px;line-height:1.65}
+.review-card .rv-line b.bad{color:var(--warn)}
+.review-card .rv-line b.good{color:var(--ok)}
+.review-card .rv-why{font-size:13px;color:var(--ink-l);background:var(--bg);border-radius:10px;padding:9px 12px;line-height:1.6}
+.empty-tip{background:var(--ok-l);border-radius:14px;padding:14px 16px;font-size:14px;color:#1D5C38;line-height:1.7}
+
+/* 知识卡 / 来源 */
+.kcard-list{display:flex;flex-direction:column;gap:10px}
+.kcard{display:flex;gap:12px;background:#fff;border-radius:14px;box-shadow:0 3px 10px rgba(18,44,67,.07);padding:14px}
+.kcard .kn{flex:none;width:34px;height:34px;border-radius:10px;background:var(--navy);color:#fff;font-weight:900;
+  display:flex;align-items:center;justify-content:center;font-size:16px}
+.kcard .kt{font-size:15.5px;font-weight:900;color:var(--navy);margin-bottom:4px}
+.kcard .kd{font-size:13.5px;color:var(--ink);line-height:1.7}
+.src-list{display:flex;flex-direction:column;gap:10px}
+.src-item{background:#fff;border-radius:12px;padding:13px 15px;box-shadow:0 3px 10px rgba(18,44,67,.06)}
+.src-item .s-t{font-size:14.5px;font-weight:800;color:var(--navy);line-height:1.5}
+.src-item a.s-u{display:block;font-size:12px;color:var(--teal-d);word-break:break-all;margin-top:5px;line-height:1.5;text-decoration:none;border-radius:6px;padding:2px 4px;margin-left:-4px}
+.src-item a.s-u:hover{text-decoration:underline}
+.src-item a.s-u:focus-visible{outline:3px solid var(--orange);outline-offset:1px}
+.disclaimer{background:var(--orange-l);border-radius:14px;padding:14px 16px;font-size:13.5px;color:#7A5218;line-height:1.75}
+
+/* 过场 */
+.interstitial{position:fixed;inset:0;z-index:70;background:rgba(14,34,51,.86);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn .25s ease}
+.its-card{background:#fff;border-radius:22px;padding:30px 24px;max-width:380px;width:100%;text-align:center;
+  display:flex;flex-direction:column;gap:14px;align-items:center;animation:popIn .4s cubic-bezier(.2,1.4,.4,1)}
+.its-card h3{font-size:21px;font-weight:900;color:var(--navy)}
+.its-card p{font-size:15px;color:var(--ink);line-height:1.7}
+.its-skip{font-size:13px;color:var(--ink-l);text-decoration:underline;padding:6px}
+
+/* 动画 */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
+@keyframes badgePop{0%{opacity:0;transform:scale(.4) rotate(-10deg)}60%{transform:scale(1.15) rotate(4deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(31,166,160,.35)}50%{box-shadow:0 0 0 8px rgba(31,166,160,0)}}
+@keyframes shake{0%,100%{transform:translate(0,0) rotate(0)}20%{transform:translate(-2.5px,1.5px) rotate(-.5deg)}40%{transform:translate(2.5px,-1.5px) rotate(.5deg)}60%{transform:translate(-1.5px,-1px) rotate(-.3deg)}80%{transform:translate(1.5px,1px) rotate(.3deg)}}
+@keyframes swing{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes hintFlash{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes dashMove{to{stroke-dashoffset:-24}}
+.swing{transform-origin:top center;animation:swing 1.6s ease-in-out infinite}
+.floaty{animation:floaty 3.2s ease-in-out infinite}
+.zone{cursor:pointer}
+/* 交互热点（SVG）的键盘焦点样式 */
+#lv-scene .obj:focus-visible,.zone:focus-visible{outline:3px solid var(--orange);outline-offset:3px;border-radius:10px}
+.hotspot:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:10px}
+.zone .z-line{stroke-dasharray:6 6;animation:dashMove 1.2s linear infinite}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media (max-width:360px){
+  .cover-title{font-size:34px}
+  .item-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .btn{font-size:16px}
+}
+@media print{
+  body{background:#fff}
+  #app{box-shadow:none;max-width:none}
+  .screen{display:none!important}
+  #scr-cards{display:block!important;animation:none}
+  #scr-cards .topbar,.no-print{display:none!important}
+  .kcard{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- 封面页 -->
+<section class="screen" id="scr-cover">
+  <div class="wrap">
+    <div class="cover-hero" aria-hidden="true">
+      <svg viewBox="0 0 440 300" role="img" aria-label="城市与居家场景插画">
+        <defs>
+          <linearGradient id="cvSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0E2233"/><stop offset="1" stop-color="#1B3A57"/>
+          </linearGradient>
+        </defs>
+        <rect width="440" height="300" fill="url(#cvSky)"/>
+        <circle cx="356" cy="62" r="30" fill="#F2A34A" opacity=".9"/>
+        <circle cx="356" cy="62" r="42" fill="#F2A34A" opacity=".18"/>
+        <g fill="#22425F">
+          <rect x="0" y="120" width="62" height="180"/><rect x="70" y="90" width="52" height="210"/>
+          <rect x="130" y="132" width="46" height="168"/><rect x="330" y="104" width="56" height="196"/>
+          <rect x="392" y="138" width="48" height="162"/>
+        </g>
+        <g fill="#FBD9A8" opacity=".85">
+          <rect x="12" y="136" width="10" height="10"/><rect x="32" y="136" width="10" height="10"/><rect x="12" y="160" width="10" height="10"/>
+          <rect x="82" y="106" width="10" height="10"/><rect x="100" y="106" width="10" height="10"/><rect x="82" y="130" width="10" height="10"/>
+          <rect x="342" y="120" width="10" height="10"/><rect x="360" y="120" width="10" height="10"/><rect x="342" y="144" width="10" height="10"/>
+          <rect x="404" y="154" width="10" height="10"/><rect x="404" y="178" width="10" height="10"/>
+        </g>
+        <g>
+          <path d="M168 168 L240 112 L312 168 Z" fill="#F2A34A"/>
+          <rect x="182" y="168" width="116" height="132" fill="#F7F9FB"/>
+          <rect x="214" y="206" width="34" height="46" rx="3" fill="#9FD8D5"/>
+          <rect x="224" y="252" width="14" height="48" fill="#1FA6A0"/>
+          <rect x="254" y="212" width="30" height="30" rx="3" fill="#BFE7E5"/>
+          <path d="M168 168 L240 112 L312 168" fill="none" stroke="#D9822B" stroke-width="8" stroke-linecap="round"/>
+        </g>
+        <rect x="0" y="288" width="440" height="12" fill="#0B1B29"/>
+        <g class="floaty">
+          <g transform="translate(118,196)">
+            <rect x="-14" y="52" width="40" height="42" rx="12" fill="#E8543F"/>
+            <rect x="-14" y="52" width="40" height="16" rx="8" fill="#F2A34A"/>
+            <rect x="-4" y="46" width="20" height="10" rx="5" fill="#C74A38"/>
+          </g>
+          <g transform="translate(96,148)">
+            <circle cx="24" cy="18" r="17" fill="#F6C89C"/>
+            <path d="M7 14 a17 17 0 0 1 34 0 v-4 a17 13 0 0 0 -34 0 Z" fill="#33495A"/>
+            <circle cx="24" cy="18" r="17" fill="none" stroke="#33495A" stroke-width="3"/>
+            <rect x="4" y="34" width="40" height="52" rx="14" fill="#1FA6A0"/>
+            <rect x="4" y="58" width="40" height="9" fill="#157f7a"/>
+            <rect x="-8" y="40" width="10" height="34" rx="5" fill="#F6C89C"/>
+            <rect x="46" y="40" width="10" height="34" rx="5" fill="#F6C89C"/>
+            <rect x="12" y="86" width="10" height="26" rx="5" fill="#33495A"/>
+            <rect x="28" y="86" width="10" height="26" rx="5" fill="#33495A"/>
+            <rect x="14" y="28" width="22" height="10" rx="5" fill="#F2A34A"/>
+          </g>
+        </g>
+        <g transform="translate(322,208)">
+          <path d="M30 0 L60 52 L0 52 Z" fill="#F2A34A" stroke="#D9822B" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="27" y="16" width="6" height="18" rx="3" fill="#122C43"/>
+          <circle cx="30" cy="42" r="4" fill="#122C43"/>
+        </g>
+      </svg>
+    </div>
+    <span class="cover-kicker">EARTHQUAKE SAFETY CHALLENGE</span>
+    <h1 class="cover-title">震感来袭！</h1>
+    <div class="cover-sub">防震减灾生存挑战</div>
+    <p class="cover-desc">地震来临时，真正重要的不是跑得快，而是判断得对。进入不同场景，作出你的选择，解锁安全行动技能。</p>
+    <div class="cover-badges">
+      <span class="cover-badge">5 个情景关卡</span>
+      <span class="cover-badge">3 个附加训练</span>
+      <span class="cover-badge">积分 · 徽章 · 知识卡</span>
+    </div>
+    <div style="height:6px"></div>
+    <button class="btn btn-orange" id="btn-start">开始挑战</button>
+    <button class="btn btn-ghost" id="btn-howto" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.35)">先看看玩法</button>
+  </div>
+</section>
+
+<!-- 故事引入页 -->
+<section class="screen" id="scr-intro">
+  <header class="topbar">
+    <button class="tb-btn" data-go="scr-cover">‹ 返回</button>
+    <div class="tb-title">任务说明</div>
+    <div style="width:58px"></div>
+  </header>
+  <div class="wrap">
+    <h2 class="page-title">任务开始：成为冷静的行动者</h2>
+    <p style="font-size:15.5px">你正在城市里度过普通的一天。地震可能发生在家中、学校、商场，也可能发生在户外。你将遇到 <b>5 个情景挑战</b>和 <b>3 个额外训练</b>。每一次选择后，都能看到对应的科普说明。准备好了吗？</p>
+    <div class="notice"><b>安全提示：</b>本作品为科普模拟体验。真实地震发生时，请根据所在环境采取适当避险措施，并遵从当地应急部门及现场工作人员指引。</div>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px;font-size:14.5px;line-height:1.7">
+      <div><b style="color:var(--navy)">怎么玩？</b></div>
+      <div>① 阅读场景，选择你认为最安全的行动；</div>
+      <div>② 答错不用怕，每次都会讲清原因，可以重试；</div>
+      <div>③ 首次答对得分最高，使用提示后答对得分降低；</div>
+      <div>④ 完成关卡收集徽章，结尾领取你的知识卡。</div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" id="btn-to-map">进入关卡地图</button>
+  </div>
+</section>
+
+<!-- 关卡地图页 -->
+<section class="screen" id="scr-map">
+  <header class="topbar">
+    <button class="tb-btn" data-go="scr-cover">‹ 首页</button>
+    <div class="tb-title">安全行动路线</div>
+    <div class="score-chip">总分 <b id="map-score">0</b></div>
+  </header>
+  <div class="wrap">
+    <p class="page-sub">完成 5 个情景，解锁你的防震知识档案。点击已解锁的关卡开始；已完成的关卡可以重玩刷新成绩。</p>
+    <div class="progress-pill"><b id="map-progress">已完成 0/5 关</b><div class="bar"><i id="map-bar" style="width:0%"></i></div></div>
+    <div class="map-list" id="map-list"></div>
+  </div>
+</section>
+
+<!-- 关卡场景页 -->
+<section class="screen" id="scr-level">
+  <header class="topbar">
+    <button class="tb-btn" id="lv-back">‹ 地图</button>
+    <div class="tb-title" id="lv-title">第 1/5 关</div>
+    <div class="score-chip">总分 <b id="lv-score">0</b></div>
+  </header>
+  <div class="wrap">
+    <div class="lv-body">
+      <div class="q-banner"><span class="lvl-pill shaking-pill" id="lv-pill">震动中 · 请迅速判断</span></div>
+      <div class="scene-wrap shaking" id="lv-scene-wrap"><div class="shake-layer" id="lv-scene"></div></div>
+      <div class="scene-note" id="lv-scene-note" aria-live="polite"></div>
+      <p class="story" id="lv-story"></p>
+      <button class="hint-btn" id="lv-hint">💡 安全提示（本题最高得 40% 分数）</button>
+      <div class="hint-panel" id="lv-hint-panel" hidden></div>
+      <h3 class="question" id="lv-question"></h3>
+      <p class="route-tip" id="lv-route-tip" hidden>点击图中你认为安全的行动位置（广告牌、路灯也可点击查看说明）</p>
+      <div class="options" id="lv-options"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 单关通关页 -->
+<section class="screen" id="scr-levelclear">
+  <header class="topbar">
+    <button class="tb-btn" data-go="scr-map">‹ 地图</button>
+    <div class="tb-title" id="lc-title">关卡完成</div>
+    <div class="score-chip">总分 <b id="lc-total">0</b></div>
+  </header>
+  <div class="wrap">
+    <div class="big-hero">
+      <div class="hero-icon">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M4 12.5 L9.5 18 L20 6.5" stroke="#37C6BF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2 id="lc-name">第 1 关完成</h2>
+      <p id="lc-sub">干得漂亮，继续保持冷静判断！</p>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px;align-items:center">
+      <div style="font-size:14px;font-weight:800;color:var(--ink-l)">本关得分</div>
+      <div class="lc-score" id="lc-score">+100</div>
+      <div class="rule-note" id="lc-rule">首次答对满分 · 重试后答对 60% · 使用提示后答对 40%</div>
+      <div class="know-chip"><span class="kc-tag">知识</span><span id="lc-know"></span></div>
+      <div class="new-badges" id="lc-badges" hidden></div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" id="lc-next">下一关</button>
+    <button class="btn btn-ghost" data-go="scr-map">返回关卡地图</button>
+  </div>
+</section>
+
+<!-- 主线通关页 -->
+<section class="screen" id="scr-mainclear">
+  <header class="topbar">
+    <button class="tb-btn" data-go="scr-map">‹ 地图</button>
+    <div class="tb-title">主线通关</div>
+    <div class="score-chip">总分 <b id="mc-total">0</b></div>
+  </header>
+  <div class="wrap">
+    <div class="big-hero">
+      <div class="hero-icon">
+        <svg width="46" height="46" viewBox="0 0 24 24" fill="none"><path d="M12 2 L20 5.5 V11 C20 16.5 16.6 20.6 12 22 C7.4 20.6 4 16.5 4 11 V5.5 Z" stroke="#37C6BF" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 12 L11 14.5 L15.5 9.5" stroke="#F2A34A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>主线通关！</h2>
+      <p>你完成了全部 5 个情景挑战！真正的安全能力，不是大胆冒险，而是在关键时刻作出科学判断。</p>
+      <div class="new-badges" id="mc-badges" hidden></div>
+    </div>
+    <div class="notice teal"><b>下一阶段：</b>主线通关！再用 3 个小游戏，把安全知识带回日常生活。每个小游戏都可以单独进入或跳过，不影响已得分数。</div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" id="mc-to-minis">进入附加挑战</button>
+    <button class="btn btn-ghost" id="mc-to-result">先查看成绩</button>
+    <button class="btn btn-ghost" data-go="scr-map">返回关卡地图</button>
+  </div>
+</section>
+
+<!-- 附加小游戏选择页 -->
+<section class="screen" id="scr-minihub">
+  <header class="topbar">
+    <button class="tb-btn" data-go="scr-map">‹ 地图</button>
+    <div class="tb-title">附加挑战</div>
+    <div class="score-chip">总分 <b id="mh-total">0</b></div>
+  </header>
+  <div class="wrap">
+    <p class="page-sub">主线通关！再用 3 个小游戏，把安全知识带回日常生活。小游戏可进入、可跳过，跳过不扣分。</p>
+    <div id="mh-list" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div style="flex:1"></div>
+    <button class="btn btn-orange" id="mh-to-result">查看最终成绩</button>
+    <button class="btn btn-ghost" data-go="scr-map">返回关卡地图</button>
+  </div>
+</section>
+
+<!-- 小游戏 A：安全隐患找茬 -->
+<section class="screen" id="scr-minia">
+  <header class="topbar">
+    <button class="tb-btn" id="ma-back">‹ 返回</button>
+    <div class="tb-title">安全隐患找茬</div>
+    <div class="score-chip">已找 <b id="ma-count">0/5</b></div>
+  </header>
+  <div class="wrap">
+    <h2 class="page-title" style="font-size:20px">找出房间里的 5 个安全隐患</h2>
+    <p class="page-sub">点击你认为需要改进的位置。找齐 5 处，就能获得「环境侦察员」徽章。点到普通区域不会扣分。</p>
+    <div class="scene-wrap find-wrap" id="ma-scene"></div>
+    <div class="count-pill">已找到 <b id="ma-count2">0</b> / 5 处隐患</div>
+    <div style="flex:1"></div>
+    <button class="btn btn-ghost" id="ma-finish">结束检查并结算</button>
+    <button class="btn btn-ghost" id="ma-skip">跳过本游戏</button>
+  </div>
+</section>
+
+<!-- 小游戏 B：应急背包整理 -->
+<section class="screen" id="scr-minib">
+  <header class="topbar">
+    <button class="tb-btn" id="mb-back">‹ 返回</button>
+    <div class="tb-title">应急背包整理师</div>
+    <div class="score-chip">已选 <b id="mb-count">0</b></div>
+  </header>
+  <div class="wrap">
+    <h2 class="page-title" style="font-size:20px">你的应急背包里装什么？</h2>
+    <p class="page-sub">突发情况来临前，提前准备好适用的应急物资，会让行动更有准备。点击卡片把适合放入应急包的物品选出来。</p>
+    <div class="pack-view">
+      <svg class="pk-ic" viewBox="0 0 64 64" aria-hidden="true"><path d="M18 22 h28 a8 8 0 0 1 8 8 v20 a8 8 0 0 1 -8 8 h-28 a8 8 0 0 1 -8 -8 v-20 a8 8 0 0 1 8 -8 Z" fill="#E8543F"/><rect x="10" y="34" width="44" height="10" fill="#F2A34A"/><rect x="24" y="12" width="16" height="12" rx="6" fill="#C74A38"/><rect x="22" y="44" width="20" height="12" rx="3" fill="#C74A38"/></svg>
+      <div class="pk-info">
+        <div class="pk-count">已放入 <span id="mb-count2">0</span> 件物品</div>
+        <div class="pack-chips" id="mb-chips"></div>
+      </div>
+    </div>
+    <div class="item-grid" id="mb-grid"></div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" id="mb-done">整理好了，开始结算</button>
+    <button class="btn btn-ghost" id="mb-skip">跳过本游戏</button>
+  </div>
+</section>
+
+<!-- 小游戏 C：被困求救判断 -->
+<section class="screen" id="scr-minic">
+  <header class="topbar">
+    <button class="tb-btn" id="mc2-back">‹ 返回</button>
+    <div class="tb-title">被困求救判断</div>
+    <div class="score-chip">已选 <b id="mc-count">0</b></div>
+  </header>
+  <div class="wrap">
+    <h2 class="page-title" style="font-size:20px">被困后，怎样更好地等待救援？</h2>
+    <p class="page-sub">选择你认为更安全的行动，可多选。完成后查看每个选择的解释。</p>
+    <div class="scene-wrap" id="mc-scene" style="background:linear-gradient(180deg,#31465A,#22364A)"></div>
+    <div class="item-grid" id="mc-grid"></div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" id="mc-done">完成选择，查看解释</button>
+    <button class="btn btn-ghost" id="mc-skip">跳过本游戏</button>
+  </div>
+</section>
+
+<!-- 最终成绩页 -->
+<section class="screen" id="scr-result">
+  <header class="topbar">
+    <button class="tb-btn" data-go="scr-cover">‹ 首页</button>
+    <div class="tb-title">最终成绩</div>
+    <div style="width:58px"></div>
+  </header>
+  <div class="wrap">
+    <div class="total-hero">
+      <div style="font-size:15px;font-weight:800;color:#C9D9E4">挑战完成！</div>
+      <div style="font-size:13.5px;color:#C9D9E4">每一次正确判断，都是多一分安全准备。</div>
+      <div class="t-num" id="rs-total">0</div>
+      <div class="t-max">/ 650 分</div>
+      <div class="total-bar"><i id="rs-bar" style="width:0%"></i></div>
+    </div>
+    <div class="grade-card">
+      <div class="g-name" id="rs-grade-name">防震新手</div>
+      <div class="g-desc" id="rs-grade-desc"></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="sv" id="rs-main">0/5</div><div class="sl">主线关卡</div></div>
+      <div class="stat-box"><div class="sv" id="rs-minis">0/3</div><div class="sl">已完成小游戏</div></div>
+      <div class="stat-box"><div class="sv" id="rs-badge-count">0/5</div><div class="sl">获得徽章</div></div>
+    </div>
+    <div id="rs-mini-tip" hidden>
+      <div class="notice teal" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+        <span><b>附加训练未完成，可随时补充挑战。</b>跳过的项目不计分，也不会记为失败。</span>
+        <button class="btn btn-primary btn-sm" id="rs-to-minis">去补充挑战</button>
+      </div>
+    </div>
+    <div class="section-h">🏅 本轮徽章</div>
+    <div class="badge-grid" id="rs-badge-wall"></div>
+    <div class="section-h">📖 需要复习的知识点</div>
+    <div id="rs-review" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div style="flex:1"></div>
+    <button class="btn btn-orange" id="rs-to-cards">查看防震知识卡</button>
+    <button class="btn btn-primary" id="rs-restart">重新挑战</button>
+    <button class="btn btn-ghost" data-go="scr-cover">返回首页</button>
+    <div class="rule-note">等级仅表示本次游戏得分，不代表真实灾害应对能力或专业资质。</div>
+  </div>
+</section>
+
+<!-- 防震知识卡页 -->
+<section class="screen" id="scr-cards">
+  <header class="topbar">
+    <button class="tb-btn" id="cd-back">‹ 返回</button>
+    <div class="tb-title">防震知识卡</div>
+    <div style="width:58px"></div>
+  </header>
+  <div class="wrap">
+    <h2 class="page-title" style="font-size:22px">关键时刻，记住这 8 条</h2>
+    <div class="kcard-list" id="cd-list"></div>
+    <div class="notice" style="font-size:13px">以上内容用于日常科普学习。真实地震中的具体行动应结合所在位置、环境条件和现场指挥，并以权威应急部门发布的信息为准。</div>
+    <div class="btn-row no-print">
+      <button class="btn btn-orange" id="cd-save" style="flex:1">保存 / 打印知识卡</button>
+    </div>
+    <button class="btn btn-primary no-print" id="cd-restart">再挑战一次</button>
+    <button class="btn btn-ghost no-print" id="cd-sources">查看资料来源</button>
+  </div>
+</section>
+
+<!-- 资料来源与免责声明 -->
+<section class="screen" id="scr-sources">
+  <header class="topbar">
+    <button class="tb-btn" id="src-back">‹ 返回</button>
+    <div class="tb-title">资料来源与免责声明</div>
+    <div style="width:58px"></div>
+  </header>
+  <div class="wrap">
+    <h2 class="page-title" style="font-size:20px">权威资料来源</h2>
+    <p class="page-sub">本作品科普内容依据以下权威资料核对编写（内容核对日期：2026-10-17）。链接在联网时点击可打开原文，离线环境不影响本页浏览。</p>
+    <div class="src-list">
+      <div class="src-item"><div class="s-t">1. 中华人民共和国应急管理部：《2025年5月12日新闻发布会》</div><a class="s-u" href="https://www.mem.gov.cn/xw/xwfbh/2025n05y12xwfbh/" target="_blank" rel="noopener noreferrer">https://www.mem.gov.cn/xw/xwfbh/2025n05y12xwfbh/</a></div>
+      <div class="src-item"><div class="s-t">2. 中华人民共和国应急管理部：《地震避险自救互救常识》</div><a class="s-u" href="https://www.mem.gov.cn/kp/zrzh/201902/t20190226_366163.shtml" target="_blank" rel="noopener noreferrer">https://www.mem.gov.cn/kp/zrzh/201902/t20190226_366163.shtml</a></div>
+      <div class="src-item"><div class="s-t">3. 中华人民共和国应急管理部：《地震自救手册，关键时刻能救命！》</div><a class="s-u" href="https://www.mem.gov.cn/kp/zrzh/201904/t20190401_366172.shtml" target="_blank" rel="noopener noreferrer">https://www.mem.gov.cn/kp/zrzh/201904/t20190401_366172.shtml</a></div>
+      <div class="src-item"><div class="s-t">4. 中华人民共和国应急管理部：《室内避震方法》</div><a class="s-u" href="https://www.mem.gov.cn/kp/zrzh/202102/t20210204_379654.shtml" target="_blank" rel="noopener noreferrer">https://www.mem.gov.cn/kp/zrzh/202102/t20210204_379654.shtml</a></div>
+      <div class="src-item"><div class="s-t">5. 北京市应急管理局（来源：北京市地震局）：《家庭如何制定防震措施？》</div><a class="s-u" href="https://yjglj.beijing.gov.cn/art/2024/5/8/art_2754_244262.html" target="_blank" rel="noopener noreferrer">https://yjglj.beijing.gov.cn/art/2024/5/8/art_2754_244262.html</a></div>
+      <div class="src-item"><div class="s-t">6. 江苏省地震局：《地震应对有一套——在家里，如何准备地震应急包？》</div><a class="s-u" href="https://www.jsdzj.gov.cn/art/2025/2/5/art_40_19767.html" target="_blank" rel="noopener noreferrer">https://www.jsdzj.gov.cn/art/2025/2/5/art_40_19767.html</a></div>
+    </div>
+    <h2 class="page-title" style="font-size:20px">免责声明</h2>
+    <div class="disclaimer">
+      本作品是用于科普教育的模拟互动作品，不是地震预测工具，不是现场救援系统，也不能替代当地应急部门、学校或场所工作人员的现场指挥。不同建筑、震情和环境存在差异，实际行动应结合现场情况和权威指引。<br><br>
+      作品中的游戏场景是教学模拟，不代表每一种建筑或每一次地震都适用完全相同的动作。文中的得分、等级与徽章仅表示本次游戏体验成果，不构成任何真实应急能力认证。<br><br>
+      本作品不收集任何个人信息，不请求定位、通讯录、摄像头、麦克风等权限，全部数据仅保存在当前会话中，关闭页面即消失。
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" id="src-back2">返回</button>
+    <button class="btn btn-ghost" data-go="scr-cover">返回首页</button>
+  </div>
+</section>
+
+</div><!-- /#app -->
+
+<!-- 玩法说明弹窗 -->
+<div class="overlay" id="md-howto" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-label="玩法说明">
+    <h3>玩法说明</h3>
+    <ol class="howto-steps">
+      <li>阅读场景并选择行动</li>
+      <li>观察即时反馈，学会原因</li>
+      <li>完成关卡、收集徽章</li>
+      <li>结尾查看自己的知识卡</li>
+    </ol>
+    <div class="dlg-text" style="font-size:13.5px;color:var(--ink-l)">首次答对得满分，答错后重试答对得 60%，使用提示后答对得 40%。小游戏可玩可跳过，总分 650。</div>
+    <button class="btn btn-primary" id="howto-ok">明白了，开始</button>
+  </div>
+</div>
+
+<!-- 答题反馈层 -->
+<div class="overlay" id="md-feedback" hidden>
+  <div class="fb-card" role="dialog" aria-modal="true" aria-live="polite">
+    <div class="fb-icon" id="fb-icon"></div>
+    <h3 class="fb-title" id="fb-title"></h3>
+    <p class="fb-text" id="fb-text"></p>
+    <div class="fb-know" id="fb-know" hidden></div>
+    <div class="fb-score" id="fb-score" hidden></div>
+    <div class="fb-btns" id="fb-btns"></div>
+  </div>
+</div>
+
+<!-- 通用确认弹窗 -->
+<div class="overlay" id="md-confirm" hidden>
+  <div class="dialog" role="dialog" aria-modal="true">
+    <h3 id="cf-title">确认</h3>
+    <p class="dlg-text" id="cf-text"></p>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="cf-cancel">再想想</button>
+      <button class="btn btn-orange" id="cf-ok">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 过场动画 -->
+<div class="interstitial" id="md-inter" hidden>
+  <div class="its-card">
+    <div id="its-icon"></div>
+    <h3 id="its-title"></h3>
+    <p id="its-text"></p>
+    <button class="its-skip" id="its-skip">点击继续 ›</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* 工具函数 */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+function toast(msg, ms){ const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast._tm); toast._tm=setTimeout(()=>t.classList.remove('show'), ms||1800); }
+
+/* 主线关卡数据 */
+const LEVELS = [
+{ name:'客厅突袭', tag:'室内避险', scene:'living', shake:true, route:false, marks:[100],
+  story:'你正在客厅休息，地面突然开始晃动，吊灯摇摆，窗边传来玻璃碰撞声。震动仍在持续，你会怎么做？',
+  q:'现在最合适的行动是什么？',
+  hint:'想一想：头顶和身边哪些东西可能掉落、破碎？客厅里哪里能就近保护你？',
+  know:'震时先避险：伏地、遮挡、手抓牢；保护头颈；远离玻璃、吊灯和可能倾倒的家具。',
+  why:'震动时就近躲到结实桌子下，伏地、遮挡、手抓牢，保护头颈并远离玻璃、吊灯。',
+  opts:[
+    {t:'立刻冲向电梯或楼梯，尽快下楼。',ok:false,fb:'先别急着往外冲。震动过程中奔跑、经过楼梯或靠近出口，都可能增加摔倒或被坠落物击中的风险。应先根据所在环境就近避险。'},
+    {t:'就近躲到结实桌子下，降低身体重心，保护头颈并抓牢桌腿。',ok:true,fb:'判断正确！室内震动时，应优先就近采取保护措施。记住七字要点："伏地、遮挡、手抓牢"。如果附近没有合适的桌子，应尽可能保护头颈，远离玻璃、吊灯和可能倾倒的家具。'},
+    {t:'跑到窗边或阳台，观察外面发生了什么。',ok:false,fb:'窗户、玻璃和阳台附近可能存在坠落物或玻璃破碎风险，不适合作为观察位置。先保护自己，远离窗边和悬挂物。'}
+  ]},
+{ name:'教室警报', tag:'校园避险', scene:'classroom', shake:true, route:false, marks:[100], after:'classroom',
+  story:'正在上课时，桌上的书本滑落，教室开始晃动。有同学站起来准备往门口冲。你会怎么做？',
+  q:'你会怎么做？',
+  hint:'震动还没停时，乱跑可能摔倒或被掉落物砸中。教室里哪里能就近保护你？',
+  know:'教室避险：就近躲到结实课桌下，保护头颈；震后听从老师指挥，有序疏散；不跳楼、不拥挤、不乘电梯。',
+  why:'先就近躲到结实课桌下保护头颈，震动停止后再听老师指挥有序疏散，不拥挤外逃。',
+  opts:[
+    {t:'马上冲出教室，抢先跑向楼梯。',ok:false,fb:'不要盲目拥挤外逃。震动期间跑动和拥挤可能导致摔倒或踩踏。应先就近避险，待震动停止后按老师指挥行动。'},
+    {t:'就近躲到结实课桌下，保护头颈，等待震动停止。',ok:true,fb:'正确！在教室内，应尽快就近采取保护措施，避免靠近窗户和容易掉落的物品。震动停止后，再听从老师指挥，有序撤离。'},
+    {t:'从窗户跳到室外，避免被困在教室里。',ok:false,fb:'跳楼会造成严重危险，不能把跳楼当作避险方式。应就近保护自己，震动停止后按现场指挥有序撤离。'}
+  ]},
+{ name:'商场惊魂', tag:'公共场所避险', scene:'mall', shake:true, route:false, marks:[100], after:'orderly',
+  story:'你正在商场购物，突然发生明显震动。有人朝出口涌去，货架上的商品开始摇晃。你会怎么做？',
+  q:'你会怎么做？',
+  hint:'观察四周：玻璃橱窗、摇晃的货架、悬挂的招牌……哪里相对更安全？',
+  know:'公共场所避险：不盲目奔跑、不拥挤；远离玻璃和不稳货架；震后听从工作人员指挥。',
+  why:'公共场所应远离玻璃橱窗和不稳货架，就近蹲下护头，震后听从工作人员指挥有序撤离。',
+  opts:[
+    {t:'立即跟着人群冲向出口。',ok:false,fb:'盲目跟随人群可能导致拥挤、摔倒或被货物砸伤。震动期间应先就近保护自己，避免冲向出口。'},
+    {t:'远离玻璃橱窗和高大不稳的货架，就近蹲下并保护头部。',ok:true,fb:'正确！公共场所震时要沉着，避开玻璃、悬挂物和不稳货架，就近采取保护措施。震动停止后，听从工作人员指挥有序撤离。'},
+    {t:'躲在玻璃橱窗旁边，方便第一时间冲出去。',ok:false,fb:'玻璃橱窗附近可能发生玻璃破碎或物品坠落，不适合作为避险位置。应选择远离玻璃和不稳货架的位置。'}
+  ]},
+{ name:'街头抉择', tag:'户外避险', scene:'street', shake:true, route:true, marks:[100],
+  story:'你正在街道上行走，突然感觉地面晃动。附近有高楼、路灯、广告牌，前方不远处是一片开阔地。你会怎么做？',
+  q:'点击图中位置，选择你的行动。',
+  hint:'开阔地在哪里？贴着高楼外墙、站在广告牌或路灯下，真的安全吗？',
+  know:'户外避险：尽可能远离建筑物、玻璃幕墙、电线杆、广告牌和高压线；选择开阔区域，蹲下并保护头部。',
+  why:'户外应尽快前往远离建筑物和高空坠落物的开阔地带，蹲下并保护头部。',
+  zones:[{key:'z-wall',opt:0},{key:'z-open',opt:1},{key:'z-mall',opt:2}],
+  zoneNotes:{ 'n-billboard':'广告牌属于高耸悬挂物，震时可能倒塌或坠落，要远离。',
+              'n-lamp':'路灯、电线杆可能倾倒或漏电，震时不要在旁边停留。' },
+  opts:[
+    {t:'靠近建筑外墙，贴墙站着。',ok:false,fb:'建筑外墙、玻璃和悬挂物可能出现坠落风险，不宜贴近建筑避险。应尽可能远离这些危险物。'},
+    {t:'尽可能前往远离建筑物和高空坠落物的开阔地带，蹲下并保护头部。',ok:true,fb:'正确！户外避险要尽可能选择开阔、安全的位置，远离建筑物、玻璃幕墙、电线杆、广告牌和高压线等危险物，并保护头部。'},
+    {t:'立即跑进最近的商场躲避。',ok:false,fb:'震动期间贸然跑向建筑物，可能经过玻璃、外墙或悬挂物等风险区域。应根据当前环境选择安全位置，避免盲目冲入建筑物。'}
+  ]},
+{ name:'震后行动', tag:'疏散与余震', marks:[50,50], two:true, decisions:[
+  { scene:'evac', shake:false,
+    story:'震动暂时停止，现场工作人员提示大家有序撤离。你想尽快离开这里，接下来怎么做？',
+    q:'接下来怎么做？',
+    hint:'想想：地震后电梯可靠吗？为了拿东西返回室内，来得及吗？',
+    know:'震后疏散：听从现场指挥；确认路线安全；不乘电梯、不跳楼、不返回取物；注意周围落物和建筑受损风险。',
+    why:'震动停止后应听从现场指挥，确认路线安全后有序撤离，不乘电梯、不返回取物。',
+    opts:[
+      {t:'乘电梯快速下楼。',ok:false,fb:'地震后不应使用电梯疏散。停电、设备故障或余震都可能增加风险，应按现场指引选择安全疏散路线。'},
+      {t:'回去拿手机、背包和贵重物品，再离开。',ok:false,fb:'不要为了取回物品耽误疏散，也不要返回可能存在风险的区域。人身安全优先。'},
+      {t:'听从现场指挥，确认路线安全后有序撤离；不乘电梯、不返回取物。',ok:true,fb:'正确！震动停止后，按照现场指挥和安全路线有序撤离。不要乘电梯，不要返回取物，也不要推挤他人。'}
+    ]},
+  { scene:'open', shake:true,
+    story:'就在你以为安全时，余震再次发生。你已经在开阔区域，周围仍有建筑物和路灯。此时应该怎么做？',
+    q:'此时应该怎么做？',
+    hint:'余震时，建筑物和路灯附近安全吗？你现在的位置已经在哪里？',
+    know:'余震不是"已经安全"的信号。继续保持警惕，远离建筑物和高空危险物，听从现场指挥。',
+    why:'余震期间应留在开阔区域，降低重心、保护头部，远离建筑物和路灯等高空危险物。',
+    opts:[
+      {t:'赶紧跑回建筑物内躲避。',ok:false,fb:'不要在余震期间贸然返回建筑物。保持在相对安全的位置，注意远离可能倒塌或坠落的物体。'},
+      {t:'站在路灯和建筑外墙旁，等震动过去。',ok:false,fb:'路灯、建筑外墙和悬挂物附近存在潜在危险。应尽可能远离这些物体，保护头部。'},
+      {t:'在开阔区域降低身体重心、保护头部，远离建筑物和高空危险物；震动停止后听从现场指引。',ok:true,fb:'正确！余震期间仍要优先保护自己，不要返回建筑物或靠近可能坠落的物体。震动停止后，再根据现场指引行动。'}
+    ]}
+]}];
+
+/* 小游戏数据 */
+const MINI_A = [
+ {id:'shelf', fb:'高大家具可考虑固定，减少倾倒风险。'},
+ {id:'window', fb:'床和常坐位置尽量远离大面积玻璃，减少玻璃破碎带来的风险。'},
+ {id:'lamp', fb:'检查吊灯、装饰物等是否牢固，避免位于经常停留位置上方的松动悬挂物。'},
+ {id:'heavy', fb:'重物尽量放低、放稳，避免地震时坠落。'},
+ {id:'path', fb:'保持主要通道畅通，便于震后按安全指引撤离。'}
+];
+const MINI_B = [
+ {id:'water', nm:'饮用水', ok:true},
+ {id:'food', nm:'方便储存食品', ok:true},
+ {id:'light', nm:'手电筒及备用电池', ok:true},
+ {id:'whistle', nm:'口哨', ok:true},
+ {id:'aid', nm:'急救用品与必需药品', ok:true},
+ {id:'firework', nm:'烟花爆竹', ok:false, why:'不属于应急包物品，存在额外安全风险。'},
+ {id:'vase', nm:'易碎的大玻璃摆件', ok:false, why:'体积大、易碎，不适合作为应急物资。'},
+ {id:'candle', nm:'明火蜡烛', ok:false, why:'应急照明优先考虑手电筒等安全方式，避免不必要的明火风险。'}
+];
+const MINI_C = [
+ {id:'calm', nm:'尽量保持冷静，先观察自己和周围环境', ok:true},
+ {id:'mask', nm:'尽可能保护口鼻，减少吸入灰尘', ok:true},
+ {id:'energy', nm:'保存体力，避免无意义的大幅动作', ok:true},
+ {id:'signal', nm:'条件允许时用手机联系救援，或用口哨、间歇敲击管道/墙体发出信号', ok:true},
+ {id:'stay', nm:'避免盲目移动沉重或不稳定的障碍物', ok:true},
+ {id:'flame', nm:'使用明火查看周围', ok:false, why:'可能引发火灾或增加危险，不应使用明火。'},
+ {id:'shout', nm:'长时间持续大喊', ok:false, why:'可能快速消耗体力；可在适当时机用口哨或间歇敲击等方式发出信号。'},
+ {id:'push', nm:'立即用力推开所有重物', ok:false, why:'不稳定的重物可能移动或坠落，不应盲目施力。'}
+];
+const BADGES = [
+ {id:'calm', nm:'冷静判断', cond:'主线前 4 关首次作答全部正确'},
+ {id:'scout', nm:'环境侦察员', cond:'小游戏 A 找齐全部 5 处隐患'},
+ {id:'packer', nm:'应急包整理师', cond:'小游戏 B 选齐 5 类正确物品'},
+ {id:'signaler', nm:'求救信号员', cond:'小游戏 C 选中至少 4 项安全行动'},
+ {id:'guardian', nm:'防震守护者', cond:'完成全部 5 个主线关卡'}
+];
+const CARDS8 = [
+ {t:'室内震时', d:'优先就近采取保护措施，记住"伏地、遮挡、手抓牢"，保护头颈。'},
+ {t:'远离危险物', d:'避开玻璃、吊灯、悬挂物和可能倾倒的高大家具。'},
+ {t:'学校避险', d:'就近保护自己；震动停止后听从老师指挥，有序疏散。'},
+ {t:'公共场所', d:'不盲目冲向出口，不拥挤；震后听从工作人员指挥。'},
+ {t:'户外避险', d:'尽可能远离建筑物、玻璃幕墙、电线杆、广告牌和高压线，选择开阔地带。'},
+ {t:'震后撤离', d:'按现场指引选择安全路线，不乘电梯、不跳楼、不返回取物。'},
+ {t:'余震应对', d:'继续保持警惕，保护头部，远离可能倒塌或坠落的物体。'},
+ {t:'被困求救', d:'尽量冷静、保存体力、注意呼吸安全；在条件允许时使用手机、口哨或间歇敲击等方式求救，不盲目移动不稳定重物。'}
+];
+</script>
+<script>
+"use strict";
+/* SVG 场景 */
+function svgOpen(vb){ return '<svg viewBox="'+vb+'" width="100%" role="img" aria-label="场景插画">'; }
+
+function sceneLiving(){
+ return svgOpen('0 0 400 250')+
+ '<rect width="400" height="192" fill="#EAF3F7"/><rect y="192" width="400" height="58" fill="#DCCDBB"/><rect y="188" width="400" height="6" fill="#CBB9A4"/>'+
+ '<rect x="40" y="30" width="46" height="36" rx="4" fill="#fff" stroke="#C9D6DE" stroke-width="4" transform="rotate(-6 63 48)"/>'+
+ '<g class="obj" data-note="窗户、玻璃可能破碎，不要靠近窗边。"><rect x="140" y="34" width="92" height="98" rx="4" fill="#fff" stroke="#C9D6DE" stroke-width="6"/><rect x="150" y="44" width="72" height="78" fill="#BFE7E5"/><line x1="186" y1="44" x2="186" y2="122" stroke="#fff" stroke-width="5"/><line x1="150" y1="83" x2="222" y2="83" stroke="#fff" stroke-width="5"/><rect x="128" y="30" width="14" height="108" rx="6" fill="#F2A34A"/><path d="M232 44 q8 6 0 14 M240 60 q8 6 0 14" stroke="#F2A34A" stroke-width="3" fill="none" stroke-linecap="round"/></g>'+
+ '<g class="obj swing" data-note="吊灯等悬挂物可能剧烈摆动甚至坠落，要远离。"><line x1="272" y1="0" x2="272" y2="46" stroke="#33495A" stroke-width="4"/><path d="M248 46 h48 l-10 22 h-28 Z" fill="#F2A34A"/><circle cx="272" cy="72" r="7" fill="#FBE3B8"/><path d="M244 78 q-8 8 0 14 M300 78 q8 8 0 14" stroke="#D9822B" stroke-width="3" fill="none" stroke-linecap="round"/></g>'+
+ '<g><rect x="16" y="110" width="138" height="34" rx="12" fill="#157f7a"/><rect x="16" y="140" width="138" height="50" rx="12" fill="#1FA6A0"/><rect x="24" y="146" width="58" height="30" rx="8" fill="#37C6BF"/><rect x="88" y="146" width="58" height="30" rx="8" fill="#37C6BF"/><rect x="10" y="120" width="16" height="66" rx="8" fill="#157f7a"/><rect x="144" y="120" width="16" height="66" rx="8" fill="#157f7a"/></g>'+
+ '<g><rect x="176" y="170" width="102" height="10" rx="4" fill="#8A6B4D"/><rect x="184" y="180" width="8" height="32" fill="#8A6B4D"/><rect x="262" y="180" width="8" height="32" fill="#8A6B4D"/></g>'+
+ '<g class="obj" data-note="高大家具和电器可能倾倒，留意并保持距离。"><rect x="300" y="138" width="86" height="52" rx="6" fill="#8A6B4D"/><rect x="308" y="94" width="74" height="44" rx="5" fill="#33495A"/><rect x="314" y="100" width="62" height="32" rx="3" fill="#9FD8D5"/><rect x="312" y="146" width="28" height="10" rx="3" fill="#6B5335"/><rect x="346" y="146" width="28" height="10" rx="3" fill="#6B5335"/></g>'+
+ '<g><path d="M210 210 a17 14 0 0 1 34 0 Z" fill="#E8543F"/><rect x="212" y="204" width="12" height="8" rx="4" fill="#33495A"/><circle cx="227" cy="192" r="9" fill="#F6C89C"/><path d="M218 190 a9 9 0 0 1 18 0" fill="#33495A"/><path d="M216 202 Q220 184 234 188" stroke="#F6C89C" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="234" cy="188" r="3.5" fill="#F6C89C"/><path d="M238 202 Q252 196 264 194" stroke="#F6C89C" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="265" cy="194" r="3.5" fill="#F6C89C"/></g>'+
+ '<ellipse cx="227" cy="222" rx="78" ry="12" fill="#C9744F" opacity=".45"/>'+
+ '</svg>';
+}
+
+function sceneClassroom(){
+ return svgOpen('0 0 400 250')+
+ '<rect width="400" height="190" fill="#EAF3F7"/><rect y="190" width="400" height="60" fill="#DCCDBB"/>'+
+ '<g><rect x="118" y="26" width="204" height="84" rx="6" fill="#8A6B4D"/><rect x="126" y="34" width="188" height="68" rx="4" fill="#2E6B5E"/><path d="M140 54 h90 M140 70 h130 M140 86 h70" stroke="#D8EDE7" stroke-width="4" stroke-linecap="round" opacity=".85"/></g>'+
+ '<g><rect x="20" y="34" width="76" height="88" rx="4" fill="#fff" stroke="#C9D6DE" stroke-width="6"/><rect x="29" y="43" width="58" height="70" fill="#BFE7E5"/><line x1="58" y1="43" x2="58" y2="113" stroke="#fff" stroke-width="5"/><path d="M100 46 q7 6 0 13 M100 66 q7 6 0 13" stroke="#F2A34A" stroke-width="3" fill="none" stroke-linecap="round"/></g>'+
+ '<g><rect x="330" y="120" width="56" height="120" fill="#B07B4F"/><rect x="338" y="130" width="40" height="110" fill="#8A6B4D"/><circle cx="368" cy="188" r="4" fill="#FBD9A8"/><rect x="326" y="96" width="64" height="20" rx="5" fill="#2E9E5B"/><path d="M336 106 h36 M366 100 l8 6 -8 6" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'+
+ '<g><rect x="330" y="30" width="56" height="60" fill="#8A6B4D"/><rect x="336" y="36" width="44" height="12" fill="#E8543F"/><rect x="336" y="52" width="44" height="12" fill="#F2A34A"/><rect x="336" y="68" width="44" height="12" fill="#1FA6A0"/></g>'+
+ '<g><rect x="150" y="120" width="140" height="30" rx="4" fill="#B07B4F"/><rect x="160" y="110" width="34" height="10" rx="2" fill="#E8543F"/><rect x="200" y="106" width="30" height="14" rx="2" fill="#F2A34A"/></g>'+
+ '<g transform="rotate(24 250 100)"><rect x="238" y="92" width="24" height="16" rx="2" fill="#1FA6A0"/></g>'+
+ '<path d="M262 84 l10 -8 M268 94 l12 -4" stroke="#D9822B" stroke-width="3" stroke-linecap="round"/>'+
+ '<g><rect x="104" y="182" width="84" height="14" rx="4" fill="#C9975F"/><rect x="112" y="196" width="8" height="26" fill="#8A6B4D"/><rect x="172" y="196" width="8" height="26" fill="#8A6B4D"/><path d="M130 222 a17 13 0 0 1 34 0 Z" fill="#1FA6A0"/><circle cx="147" cy="208" r="9" fill="#F6C89C"/><path d="M138 206 a9 9 0 0 1 18 0" fill="#33495A"/><path d="M136 216 Q140 198 154 202" stroke="#F6C89C" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="154" cy="202" r="3.5" fill="#F6C89C"/></g>'+
+ '<g><rect x="216" y="182" width="84" height="14" rx="4" fill="#C9975F"/><rect x="224" y="196" width="8" height="26" fill="#8A6B4D"/><rect x="284" y="196" width="8" height="26" fill="#8A6B4D"/><rect x="240" y="140" width="16" height="34" rx="7" fill="#F2A34A"/><circle cx="248" cy="130" r="9" fill="#F6C89C"/><path d="M258 118 l6 -10 M266 126 l9 -6" stroke="#D9822B" stroke-width="3" stroke-linecap="round"/></g>'+
+ '<g><circle cx="308" cy="150" r="9" fill="#F6C89C"/><rect x="298" y="158" width="18" height="30" rx="8" fill="#E8543F"/><path d="M296 196 l-10 12 M314 196 l12 8" stroke="#33495A" stroke-width="5" stroke-linecap="round"/><path d="M282 156 l-12 -4 M284 168 l-12 2" stroke="#D9822B" stroke-width="3" stroke-linecap="round"/></g>'+
+ '</svg>';
+}
+
+function sceneMall(){
+ return svgOpen('0 0 400 250')+
+ '<rect width="400" height="190" fill="#F3EDE4"/><rect y="190" width="400" height="60" fill="#DCCDBB"/><path d="M0 214 h400 M0 232 h400" stroke="#CBB9A4" stroke-width="2"/>'+
+ '<g><rect x="16" y="56" width="94" height="150" fill="#8A6B4D"/><rect x="22" y="64" width="82" height="26" fill="#B07B4F"/><rect x="26" y="68" width="16" height="18" fill="#E8543F"/><rect x="46" y="68" width="16" height="18" fill="#F2A34A"/><rect x="66" y="68" width="16" height="18" fill="#1FA6A0"/><rect x="86" y="68" width="14" height="18" fill="#37C6BF"/><rect x="22" y="98" width="82" height="26" fill="#B07B4F"/><rect x="26" y="102" width="16" height="18" fill="#37C6BF"/><rect x="46" y="102" width="16" height="18" fill="#E8543F"/><rect x="66" y="102" width="16" height="18" fill="#FBD9A8"/><rect x="86" y="102" width="14" height="18" fill="#F2A34A"/><rect x="22" y="132" width="82" height="26" fill="#B07B4F"/><rect x="26" y="136" width="16" height="18" fill="#F2A34A"/><rect x="46" y="136" width="16" height="18" fill="#1FA6A0"/><rect x="66" y="136" width="16" height="18" fill="#E8543F"/><rect x="86" y="136" width="14" height="18" fill="#37C6BF"/><rect x="22" y="166" width="82" height="32" fill="#B07B4F"/>'+
+ '<g transform="rotate(18 112 60)"><rect x="100" y="48" width="22" height="18" rx="3" fill="#E8543F"/></g><path d="M126 40 l12 -8 M130 52 l13 -3" stroke="#D9822B" stroke-width="3" stroke-linecap="round"/></g>'+
+ '<g><rect x="130" y="46" width="112" height="126" rx="4" fill="#33495A"/><rect x="138" y="54" width="96" height="110" fill="#CDE9F2"/><path d="M150 150 l24 -60 M178 160 l28 -70" stroke="#fff" stroke-width="6" opacity=".7" stroke-linecap="round"/><circle cx="170" cy="104" r="10" fill="#9AA7B0"/><rect x="158" y="114" width="24" height="34" rx="8" fill="#9AA7B0"/><circle cx="208" cy="106" r="10" fill="#B9C6CF"/><rect x="196" y="116" width="24" height="32" rx="8" fill="#B9C6CF"/></g>'+
+ '<g><rect x="256" y="150" width="112" height="60" rx="8" fill="#1FA6A0"/><rect x="256" y="150" width="112" height="14" rx="7" fill="#157f7a"/><rect x="330" y="128" width="26" height="22" rx="3" fill="#33495A"/><rect x="334" y="132" width="18" height="10" rx="2" fill="#9FD8D5"/></g>'+
+ '<g class="swing"><line x1="206" y1="0" x2="206" y2="22" stroke="#33495A" stroke-width="4"/><rect x="166" y="22" width="80" height="22" rx="6" fill="#F2A34A"/><path d="M178 33 h40 M214 27 l8 6 -8 6" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'+
+ '<g><rect x="348" y="120" width="44" height="112" fill="#B07B4F"/><rect x="354" y="128" width="32" height="104" fill="#8A6B4D"/><rect x="344" y="96" width="52" height="20" rx="5" fill="#2E9E5B"/><path d="M352 106 h28 M374 100 l8 6 -8 6" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'+
+ '<g><circle cx="292" cy="146" r="9" fill="#F6C89C"/><rect x="282" y="154" width="18" height="28" rx="8" fill="#33495A"/><path d="M282 186 l-10 10 M298 186 l10 8" stroke="#33495A" stroke-width="5" stroke-linecap="round"/><path d="M266 152 l-12 -3 M268 162 l-12 3" stroke="#D9822B" stroke-width="3" stroke-linecap="round"/></g>'+
+ '<g><circle cx="322" cy="140" r="8" fill="#F6C89C"/><rect x="313" y="147" width="16" height="26" rx="7" fill="#7A5C3E"/><path d="M315 177 l-9 10 M329 177 l10 7" stroke="#33495A" stroke-width="5" stroke-linecap="round"/></g>'+
+ '<g><circle cx="272" cy="168" r="9" fill="#F6C89C"/><path d="M256 202 a16 16 0 0 1 32 0 Z" fill="#E8543F"/><rect x="258" y="162" width="26" height="7" rx="3.5" fill="#33495A"/></g>'+
+ '</svg>';
+}
+
+function zoneChip(x,y,txt,color){ return '<g><rect x="'+x+'" y="'+y+'" rx="9" width="'+(txt.length*12+16)+'" height="20" fill="'+color+'" opacity=".92"/><text x="'+(x+(txt.length*12+16)/2)+'" y="'+(y+14.5)+'" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">'+txt+'</text></g>'; }
+
+function sceneStreet(){
+ return svgOpen('0 0 400 250')+
+ '<rect width="400" height="250" fill="#EAF3F7"/>'+
+ '<rect y="168" width="400" height="34" fill="#C6CFD6"/><rect y="202" width="400" height="48" fill="#9AA7B0"/><path d="M0 226 h400" stroke="#fff" stroke-width="4" stroke-dasharray="22 16" opacity=".7"/><line x1="0" y1="202" x2="400" y2="202" stroke="#8FA0AC" stroke-width="3"/>'+
+ '<g><rect x="0" y="28" width="102" height="140" fill="#33495A"/><rect x="12" y="44" width="18" height="18" fill="#FBD9A8"/><rect x="42" y="44" width="18" height="18" fill="#FBD9A8" opacity=".4"/><rect x="72" y="44" width="18" height="18" fill="#FBD9A8"/><rect x="12" y="78" width="18" height="18" fill="#FBD9A8" opacity=".4"/><rect x="42" y="78" width="18" height="18" fill="#FBD9A8"/><rect x="72" y="78" width="18" height="18" fill="#FBD9A8" opacity=".4"/><rect x="12" y="112" width="18" height="18" fill="#FBD9A8"/><rect x="42" y="112" width="18" height="18" fill="#FBD9A8" opacity=".4"/><rect x="72" y="112" width="18" height="18" fill="#FBD9A8"/></g>'+
+ '<g><rect x="318" y="20" width="82" height="148" fill="#6FA8C9"/><path d="M326 28 l64 132 M350 28 l48 100" stroke="#CDE9F2" stroke-width="7" opacity=".6"/><path d="M318 62 h82 M318 106 h82 M318 148 h82" stroke="#4E87AB" stroke-width="4"/></g>'+
+ '<g><rect x="122" y="64" width="90" height="104" fill="#B07B4F"/><rect x="132" y="102" width="70" height="66" fill="#CDE9F2"/><rect x="162" y="102" width="6" height="66" fill="#fff"/><rect x="116" y="42" width="102" height="22" rx="6" fill="#E8543F"/><text x="167" y="58" font-size="13" font-weight="800" fill="#fff" text-anchor="middle">商 场</text></g>'+
+ '<g><line x1="270" y1="74" x2="270" y2="200" stroke="#33495A" stroke-width="6"/><rect x="228" y="34" width="84" height="40" rx="6" fill="#F2A34A" stroke="#D9822B" stroke-width="4"/><circle cx="246" cy="54" r="9" fill="#fff" opacity=".9"/><rect x="262" y="44" width="40" height="8" rx="4" fill="#fff" opacity=".85"/><rect x="262" y="58" width="30" height="8" rx="4" fill="#fff" opacity=".6"/></g>'+
+ '<g><line x1="222" y1="64" x2="222" y2="200" stroke="#33495A" stroke-width="6"/><path d="M222 68 h24" stroke="#33495A" stroke-width="6" stroke-linecap="round"/><circle cx="249" cy="74" r="8" fill="#FBE3B8" stroke="#33495A" stroke-width="3"/></g>'+
+ '<g class="zone" data-zone="n-billboard" tabindex="0" role="button" aria-label="广告牌区域说明"><rect class="z-line" x="246" y="160" width="52" height="36" rx="8" fill="rgba(217,95,67,.08)" stroke="#D95F43" stroke-width="2.5"/>'+zoneChip(250,167,'广告牌','#D95F43')+'</g>'+
+ '<g class="zone" data-zone="n-lamp" tabindex="0" role="button" aria-label="路灯区域说明"><rect class="z-line" x="202" y="160" width="40" height="36" rx="8" fill="rgba(217,95,67,.08)" stroke="#D95F43" stroke-width="2.5"/>'+zoneChip(206,167,'路灯','#D95F43')+'</g>'+
+ '<g class="zone" data-zone="z-wall" tabindex="0" role="button" aria-label="选择：贴墙站"><rect class="z-line" x="6" y="118" width="92" height="46" rx="10" fill="rgba(242,163,74,.10)" stroke="#D9822B" stroke-width="2.5"/>'+zoneChip(14,132,'① 贴墙站','#D9822B')+'</g>'+
+ '<g class="zone" data-zone="z-mall" tabindex="0" role="button" aria-label="选择：跑进商场"><rect class="z-line" x="134" y="104" width="66" height="62" rx="10" fill="rgba(242,163,74,.10)" stroke="#D9822B" stroke-width="2.5"/>'+zoneChip(136,140,'③ 跑进商场','#D9822B')+'</g>'+
+ '<g class="zone" data-zone="z-open" tabindex="0" role="button" aria-label="选择：前往开阔地"><rect class="z-line" x="60" y="208" width="270" height="38" rx="12" fill="rgba(46,158,91,.10)" stroke="#2E9E5B" stroke-width="3"/>'+zoneChip(172,217,'② 开阔地','#2E9E5B')+'<ellipse cx="310" cy="228" rx="26" ry="6" fill="#57B478" opacity=".5"/></g>'+
+ '<g><circle cx="112" cy="132" r="10" fill="#F6C89C"/><rect x="98" y="142" width="28" height="28" rx="11" fill="#E8543F"/><rect x="98" y="168" width="10" height="18" rx="5" fill="#33495A"/><rect x="116" y="168" width="10" height="18" rx="5" fill="#33495A"/><rect x="100" y="124" width="24" height="8" rx="4" fill="#33495A"/></g>'+
+ '</svg>';
+}
+
+function sceneEvac(){
+ return svgOpen('0 0 400 250')+
+ '<rect width="400" height="190" fill="#EAF3F7"/><rect y="190" width="400" height="60" fill="#DCCDBB"/>'+
+ '<path d="M60 220 h60 M200 220 h60" stroke="#F2A34A" stroke-width="6" stroke-linecap="round"/><path d="M118 212 l16 8 -16 8 Z M258 212 l16 8 -16 8 Z" fill="#F2A34A"/>'+
+ '<g><rect x="26" y="66" width="86" height="124" rx="6" fill="#9AA7B0"/><rect x="34" y="76" width="34" height="106" fill="#7C8B96"/><rect x="70" y="76" width="34" height="106" fill="#7C8B96"/><line x1="69" y1="76" x2="69" y2="182" stroke="#5D6E79" stroke-width="4"/><circle cx="69" cy="52" r="17" fill="#fff" stroke="#D95F43" stroke-width="5"/><path d="M60 43 l18 18 M78 43 l-18 18" stroke="#D95F43" stroke-width="5" stroke-linecap="round"/></g>'+
+ '<g><rect x="296" y="52" width="88" height="140" rx="6" fill="#B07B4F"/><rect x="306" y="62" width="56" height="120" fill="#8FE0B9"/><rect x="316" y="72" width="46" height="110" fill="#D6F5E5"/><rect x="288" y="24" width="104" height="24" rx="7" fill="#2E9E5B"/><path d="M300 36 h64 M358 28 l12 8 -12 8" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'+
+ '<g><circle cx="196" cy="96" r="12" fill="#F6C89C"/><rect x="180" y="108" width="32" height="48" rx="10" fill="#F2A34A"/><rect x="184" y="112" width="24" height="12" rx="4" fill="#E8543F"/><path d="M212 116 l34 -14" stroke="#F6C89C" stroke-width="8" stroke-linecap="round"/><rect x="182" y="156" width="10" height="34" rx="5" fill="#33495A"/><rect x="200" y="156" width="10" height="34" rx="5" fill="#33495A"/><rect x="242" y="92" width="20" height="14" rx="3" fill="#2E9E5B"/></g>'+
+ '<g><circle cx="146" cy="116" r="10" fill="#F6C89C"/><path d="M130 190 a16 16 0 0 1 32 0 Z" fill="#E8543F"/><rect x="132" y="110" width="26" height="7" rx="3.5" fill="#33495A"/></g>'+
+ '<g><path d="M76 200 l12 -22 l12 22 Z" fill="#F2A34A" stroke="#D9822B" stroke-width="3" stroke-linejoin="round"/><rect x="85" y="190" width="6" height="8" rx="3" fill="#122C43"/><circle cx="88" cy="201" r="2.5" fill="#122C43"/></g>'+
+ '</svg>';
+}
+
+function sceneOpen(){
+ return svgOpen('0 0 400 250')+
+ '<rect width="400" height="250" fill="#EAF3F7"/><rect y="148" width="400" height="102" fill="#DDE7DC"/>'+
+ '<g fill="#5B7A93"><rect x="0" y="52" width="70" height="96"/><rect x="78" y="82" width="50" height="66"/><rect x="300" y="60" width="60" height="88"/><rect x="366" y="88" width="34" height="60"/></g>'+
+ '<g fill="#FBD9A8" opacity=".8"><rect x="10" y="64" width="10" height="10"/><rect x="30" y="64" width="10" height="10"/><rect x="10" y="86" width="10" height="10"/><rect x="310" y="72" width="10" height="10"/><rect x="330" y="72" width="10" height="10"/><rect x="310" y="94" width="10" height="10"/></g>'+
+ '<g><line x1="132" y1="76" x2="132" y2="148" stroke="#33495A" stroke-width="6"/><path d="M132 80 h18" stroke="#33495A" stroke-width="6" stroke-linecap="round"/><circle cx="153" cy="86" r="7" fill="#FBE3B8" stroke="#33495A" stroke-width="3"/></g>'+
+ '<path d="M40 216 l22 6 l-12 8 M330 200 l24 4 l-14 10" stroke="#B9C9BC" stroke-width="3" fill="none" stroke-linecap="round"/>'+
+ '<g><circle cx="96" cy="150" r="11" fill="#F6C89C"/><rect x="82" y="160" width="28" height="44" rx="10" fill="#F2A34A"/><rect x="86" y="164" width="20" height="11" rx="4" fill="#E8543F"/><rect x="84" y="204" width="9" height="30" rx="4.5" fill="#33495A"/><rect x="99" y="204" width="9" height="30" rx="4.5" fill="#33495A"/><rect x="64" y="146" width="18" height="13" rx="3" fill="#2E9E5B"/></g>'+
+ '<g><path d="M196 206 a20 20 0 0 1 40 0 Z" fill="#E8543F"/><circle cx="216" cy="180" r="11" fill="#F6C89C"/><path d="M200 174 a16 12 0 0 1 32 0" fill="none" stroke="#33495A" stroke-width="6" stroke-linecap="round"/><rect x="204" y="166" width="24" height="7" rx="3.5" fill="#33495A"/></g>'+
+ '<ellipse cx="216" cy="226" rx="46" ry="9" fill="rgba(46,158,91,.18)"/>'+
+ '</svg>';
+}
+</script>
+<script>
+"use strict";
+/* 隐患房间场景：5 个可点击风险点 */
+function hzGroup(id,x,y,w,h,inner){
+ return '<g class="hotspot" data-hz="'+id+'" role="button" aria-label="可疑位置" tabindex="0">'+
+ '<rect class="hs-hit" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'"/>'+
+ inner+
+ '<rect class="hs-ring" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="10" fill="rgba(242,163,74,.12)" stroke="#F2A34A" stroke-width="3" stroke-dasharray="7 5"/>'+
+ '<g class="hs-ring"><circle cx="'+(x+w-4)+'" cy="'+(y+4)+'" r="12" fill="#2E9E5B"/><path d="M'+(x+w-10)+' '+(y+4)+' l4 4 l8 -9" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'+
+ '</g>';
+}
+function sceneRoomHz(){
+ return svgOpen('0 0 400 280')+
+ '<rect width="400" height="212" fill="#FDF3E7"/><rect y="212" width="400" height="68" fill="#DCCDBB"/><rect y="208" width="400" height="6" fill="#CBB9A4"/>'+
+ '<circle cx="322" cy="34" r="16" fill="#fff" stroke="#C9D6DE" stroke-width="4"/><path d="M322 34 v-9 M322 34 l7 5" stroke="#33495A" stroke-width="3" stroke-linecap="round"/>'+
+ hzGroup('heavy',20,4,112,44,
+  '<rect x="24" y="38" width="104" height="8" rx="3" fill="#8A6B4D"/><rect x="30" y="44" width="8" height="20" fill="#8A6B4D"/>'+
+  '<g transform="rotate(-5 66 20)"><rect x="40" y="4" width="56" height="32" rx="4" fill="#8A6B4D"/><rect x="40" y="4" width="56" height="10" rx="4" fill="#6B5335"/><path d="M52 22 h32" stroke="#FBD9A8" stroke-width="4" stroke-linecap="round"/></g>'+
+  '<path d="M100 12 l8 -8 M106 22 l10 -5" stroke="#D9822B" stroke-width="3" stroke-linecap="round"/>')+
+ hzGroup('window',178,32,96,100,
+  '<rect x="182" y="36" width="88" height="92" rx="4" fill="#fff" stroke="#C9D6DE" stroke-width="6"/><rect x="192" y="46" width="68" height="72" fill="#BFE7E5"/><line x1="226" y1="46" x2="226" y2="118" stroke="#fff" stroke-width="5"/><line x1="192" y1="82" x2="260" y2="82" stroke="#fff" stroke-width="5"/><rect x="170" y="32" width="13" height="100" rx="6" fill="#F2A34A"/>')+
+ hzGroup('lamp',196,0,72,58,
+  '<line x1="232" y1="0" x2="232" y2="30" stroke="#33495A" stroke-width="4"/><path d="M208 30 h48 l-10 20 h-28 Z" fill="#F2A34A"/><circle cx="232" cy="54" r="6" fill="#FBE3B8"/>')+
+ hzGroup('shelf',286,20,82,132,
+  '<rect x="290" y="24" width="74" height="124" rx="5" fill="#8A6B4D"/><rect x="296" y="32" width="62" height="26" fill="#B07B4F"/><rect x="300" y="36" width="12" height="18" fill="#E8543F"/><rect x="316" y="36" width="12" height="18" fill="#F2A34A"/><rect x="332" y="36" width="12" height="18" fill="#1FA6A0"/><rect x="348" y="36" width="8" height="18" fill="#FBD9A8"/><rect x="296" y="64" width="62" height="26" fill="#B07B4F"/><rect x="300" y="68" width="12" height="18" fill="#37C6BF"/><rect x="316" y="68" width="12" height="18" fill="#E8543F"/><rect x="332" y="68" width="12" height="18" fill="#FBD9A8"/><rect x="348" y="68" width="8" height="18" fill="#F2A34A"/><rect x="296" y="96" width="62" height="26" fill="#B07B4F"/><rect x="300" y="100" width="12" height="18" fill="#F2A34A"/><rect x="316" y="100" width="12" height="18" fill="#1FA6A0"/><rect x="332" y="100" width="12" height="18" fill="#E8543F"/><rect x="348" y="100" width="8" height="18" fill="#37C6BF"/><rect x="296" y="128" width="62" height="16" fill="#6B5335"/>')+
+ '<g><rect x="16" y="168" width="152" height="18" rx="6" fill="#8A6B4D"/><rect x="16" y="150" width="152" height="26" rx="9" fill="#fff"/><rect x="16" y="160" width="152" height="30" rx="9" fill="#1FA6A0"/><rect x="24" y="144" width="40" height="20" rx="8" fill="#fff"/><rect x="24" y="186" width="10" height="26" fill="#6B5335"/><rect x="152" y="186" width="10" height="26" fill="#6B5335"/></g>'+
+ '<g><rect x="186" y="186" width="104" height="16" rx="7" fill="#157f7a"/><rect x="186" y="168" width="104" height="34" rx="10" fill="#1FA6A0"/><rect x="192" y="172" width="42" height="22" rx="7" fill="#37C6BF"/><rect x="240" y="172" width="42" height="22" rx="7" fill="#37C6BF"/></g>'+
+ hzGroup('path',288,196,98,54,
+  '<rect x="300" y="158" width="70" height="76" rx="5" fill="#B07B4F"/><rect x="308" y="166" width="54" height="64" fill="#8A6B4D"/><circle cx="360" cy="200" r="4" fill="#FBD9A8"/>'+
+  '<g transform="rotate(-8 316 226)"><rect x="298" y="210" width="36" height="28" rx="3" fill="#C9975F"/></g>'+
+  '<g transform="rotate(7 352 230)"><rect x="336" y="214" width="34" height="26" rx="3" fill="#E8543F"/></g>'+
+  '<circle cx="330" cy="240" r="9" fill="#F2A34A"/><path d="M300 240 h70" stroke="#6B5335" stroke-width="3" stroke-linecap="round"/>')+
+ '<ellipse cx="120" cy="252" rx="76" ry="10" fill="#C9744F" opacity=".4"/>'+
+ '<g><rect x="262" y="196" width="16" height="18" rx="4" fill="#E8543F"/><path d="M270 196 q-14 -14 -4 -26 M270 196 q2 -18 12 -24 M270 196 q-6 -16 -18 -18" stroke="#2E9E5B" stroke-width="5" fill="none" stroke-linecap="round"/></g>'+
+ '</svg>';
+}
+
+/* 被困模拟场景（非写实、无伤亡表现） */
+function sceneTrapped(){
+ return svgOpen('0 0 400 250')+
+ '<rect width="400" height="250" fill="#22364A"/>'+
+ '<g><polygon points="70,0 130,0 210,150 110,150" fill="#FBD9A8" opacity=".20"/><polygon points="86,0 116,0 168,140 128,140" fill="#FBE9C8" opacity=".25"/></g>'+
+ '<g fill="#5D7285"><rect x="0" y="70" width="64" height="180" rx="10"/><rect x="336" y="90" width="64" height="160" rx="10"/><rect x="150" y="0" width="250" height="34" rx="8"/><rect x="40" y="206" width="150" height="44" rx="10"/><rect x="220" y="212" width="150" height="38" rx="10"/></g>'+
+ '<g fill="#4A5E70"><rect x="8" y="82" width="48" height="30" rx="8"/><rect x="344" y="102" width="44" height="28" rx="8"/><rect x="56" y="212" width="60" height="26" rx="8"/><rect x="240" y="216" width="70" height="24" rx="8"/></g>'+
+ '<rect x="118" y="120" width="180" height="20" rx="8" fill="#6B7F8F" transform="rotate(-16 208 130)"/>'+
+ '<g fill="#FBD9A8" opacity=".5"><circle cx="150" cy="90" r="2.5"/><circle cx="190" cy="120" r="2"/><circle cx="132" cy="140" r="2"/><circle cx="226" cy="96" r="2.5"/></g>'+
+ '<g><circle cx="200" cy="156" r="13" fill="#F6C89C"/><rect x="182" y="168" width="36" height="40" rx="14" fill="#1FA6A0"/><path d="M184 208 l-12 14 M216 208 l12 14" stroke="#33495A" stroke-width="7" stroke-linecap="round"/><rect x="186" y="148" width="28" height="8" rx="4" fill="#33495A"/><path d="M222 176 q10 8 2 18" stroke="#F6C89C" stroke-width="6" fill="none" stroke-linecap="round"/></g>'+
+ '<g class="floaty"><rect x="292" y="86" width="26" height="42" rx="6" fill="#33495A"/><rect x="296" y="92" width="18" height="26" rx="3" fill="#9FD8D5"/><circle cx="305" cy="122" r="2.5" fill="#9FD8D5"/></g>'+
+ '<g class="floaty" style="animation-delay:.8s"><circle cx="112" cy="112" r="12" fill="#F2A34A"/><rect x="122" y="106" width="12" height="10" rx="4" fill="#D9822B"/><circle cx="108" cy="108" r="3" fill="#122C43"/></g>'+
+ '<path d="M146 100 q8 10 0 20 M156 92 q14 18 0 36" stroke="#37C6BF" stroke-width="3.5" fill="none" stroke-linecap="round"/>'+
+ '</svg>';
+}
+
+/* 物品图标 */
+function iconItem(id){
+ const w='<svg class="ic" viewBox="0 0 64 64" aria-hidden="true">';
+ switch(id){
+ case 'water': return w+'<rect x="24" y="8" width="16" height="8" rx="3" fill="#157f7a"/><path d="M22 16 h20 v8 l4 8 v22 a6 6 0 0 1 -6 6 h-16 a6 6 0 0 1 -6 -6 v-22 l4 -8 Z" fill="#4FB3E8"/><rect x="20" y="34" width="24" height="12" rx="3" fill="#fff" opacity=".85"/></svg>';
+ case 'food': return w+'<ellipse cx="32" cy="14" rx="16" ry="6" fill="#FBD9A8"/><rect x="16" y="14" width="32" height="38" fill="#F2A34A"/><ellipse cx="32" cy="52" rx="16" ry="6" fill="#D9822B"/><rect x="24" y="24" width="16" height="14" rx="3" fill="#fff" opacity=".85"/></svg>';
+ case 'light': return w+'<path d="M26 6 h12 v6 h-12 Z" fill="#8A6B4D"/><rect x="20" y="12" width="24" height="42" rx="9" fill="#F2A34A"/><rect x="24" y="40" width="16" height="10" rx="4" fill="#D9822B"/><path d="M14 18 l-6 -5 M50 18 l6 -5 M32 4 v-3" stroke="#F2A34A" stroke-width="4" stroke-linecap="round"/></svg>';
+ case 'whistle': return w+'<circle cx="28" cy="34" r="18" fill="#1FA6A0"/><circle cx="24" cy="30" r="7" fill="#0E5A56"/><rect x="42" y="26" width="16" height="12" rx="5" fill="#157f7a"/><circle cx="28" cy="34" r="18" fill="none" stroke="#157f7a" stroke-width="3"/><path d="M10 12 q-6 8 0 16 M54 12 q6 8 0 16" stroke="#37C6BF" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>';
+ case 'aid': return w+'<rect x="10" y="16" width="44" height="36" rx="8" fill="#fff" stroke="#C9D6DE" stroke-width="3"/><rect x="26" y="24" width="12" height="20" rx="3" fill="#E8543F"/><rect x="22" y="28" width="20" height="12" rx="3" fill="#E8543F"/><rect x="24" y="8" width="16" height="10" rx="4" fill="#8A6B4D"/></svg>';
+ case 'firework': return w+'<rect x="28" y="26" width="8" height="30" rx="3" fill="#8A6B4D"/><path d="M32 4 L46 26 H18 Z" fill="#E8543F"/><circle cx="32" cy="16" r="4" fill="#FBD9A8"/><path d="M32 2 v-2 M44 8 l4 -4 M20 8 l-4 -4 M50 18 l5 -2 M14 18 l-5 -2" stroke="#F2A34A" stroke-width="3.5" stroke-linecap="round"/></svg>';
+ case 'vase': return w+'<path d="M26 6 h12 v10 q14 8 10 26 q-3 14 -16 14 q-13 0 -16 -14 q-4 -18 10 -26 Z" fill="#6FA8C9"/><path d="M22 34 q10 6 20 0" stroke="#CDE9F2" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="24" y="4" width="16" height="6" rx="3" fill="#4E87AB"/></svg>';
+ case 'candle': return w+'<ellipse cx="32" cy="56" rx="20" ry="6" fill="#8A6B4D"/><rect x="24" y="26" width="16" height="28" rx="5" fill="#FBD9A8"/><line x1="32" y1="26" x2="32" y2="18" stroke="#33495A" stroke-width="3"/><path d="M32 4 q8 8 0 14 q-8 -6 0 -14" fill="#F2A34A"/></svg>';
+ }
+ return w+'</svg>';
+}
+
+/* 徽章图标 */
+function iconBadge(id){
+ const w='<svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">';
+ switch(id){
+ case 'calm': return w+'<circle cx="24" cy="17" r="9" fill="#F6C89C"/><path d="M11 40 q13 -14 26 0 Z" fill="#1FA6A0"/><rect x="15" y="10" width="18" height="6" rx="3" fill="#33495A"/><circle cx="36" cy="36" r="9" fill="#2E9E5B"/><path d="M31.5 36 l3.5 3.5 l7 -8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+ case 'scout': return w+'<circle cx="21" cy="21" r="12" fill="#CDE9F2" stroke="#1FA6A0" stroke-width="4"/><path d="M30 30 l11 11" stroke="#8A6B4D" stroke-width="6" stroke-linecap="round"/><path d="M15 21 l4 4 l8 -9" stroke="#157f7a" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+ case 'packer': return w+'<rect x="12" y="14" width="24" height="26" rx="8" fill="#E8543F"/><rect x="12" y="24" width="24" height="8" fill="#F2A34A"/><rect x="19" y="8" width="10" height="8" rx="4" fill="#C74A38"/><circle cx="24" cy="33" r="4" fill="#FBD9A8"/></svg>';
+ case 'signaler': return w+'<circle cx="20" cy="28" r="11" fill="#F2A34A"/><circle cx="17" cy="25" r="3.5" fill="#122C43"/><rect x="29" y="23" width="9" height="8" rx="3.5" fill="#D9822B"/><path d="M8 12 q-5 7 0 14 M40 12 q5 7 0 14" stroke="#37C6BF" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>';
+ case 'guardian': return w+'<path d="M24 4 L40 10 v12 c0 11 -7 18 -16 22 C15 40 8 33 8 22 V10 Z" fill="#1FA6A0"/><path d="M16 23 l6 6 l11 -12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+ }
+ return w+'</svg>';
+}
+</script>
+<script>
+"use strict";
+/* 全局状态 */
+function freshRun(){
+ return {
+  levels: Array.from({length:5},()=>({done:false,score:0,firstTry:false})),
+  minis:{ a:{st:'idle',score:0}, b:{st:'idle',score:0}, c:{st:'idle',score:0} },
+  wrongLog:[],            // {lv,dec,scene,chosen,correct,why}
+  badges:{calm:false,scout:false,packer:false,signaler:false,guardian:false}
+ };
+}
+let run = freshRun();
+let cur = null;           // 当前关卡尝试 {lv,dec,marks,attempts,hintUsed,wrongPicks,answered,route}
+const decKey = (lv,dec)=> lv+'-'+dec;
+const decMarks = (lv,dec)=> LEVELS[lv].marks[dec];
+const decOf = (lv,dec)=> LEVELS[lv].two ? LEVELS[lv].decisions[dec] : LEVELS[lv];
+const decCount = lv => LEVELS[lv].marks.length;
+const mainScore = ()=> run.levels.reduce((s,l)=>s+l.score,0);
+const miniScore = ()=> ['a','b','c'].reduce((s,k)=> s + (run.minis[k].st==='done'?run.minis[k].score:0),0);
+const totalScore = ()=> mainScore()+miniScore();
+const SCENES = {living:sceneLiving, classroom:sceneClassroom, mall:sceneMall, street:sceneStreet, evac:sceneEvac, open:sceneOpen};
+
+/* 导航 */
+function go(id){
+ $$('.screen').forEach(s=>s.classList.remove('on'));
+ const t=$('#'+id); t.classList.add('on'); window.scrollTo(0,0);
+ if(id==='scr-map') renderMap();
+ if(id==='scr-minihub') renderHub();
+ if(id==='scr-result') renderResult();
+ if(id==='scr-cards') renderCards();
+}
+$$('[data-go]').forEach(b=> b.addEventListener('click',()=> go(b.dataset.go)));
+
+/* 确认弹窗 */
+function confirmDlg(title,text,okLabel,cb){
+ $('#cf-title').textContent=title; $('#cf-text').textContent=text; $('#cf-ok').textContent=okLabel||'确定';
+ $('#md-confirm').hidden=false;
+ $('#cf-ok').onclick=()=>{ $('#md-confirm').hidden=true; cb&&cb(); };
+ $('#cf-cancel').onclick=()=>{ $('#md-confirm').hidden=true; };
+}
+
+/* 反馈层 */
+const FB_ICON = {
+ ok:'<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#2E9E5B"/><path d="M7 12.5 L10.5 16 L17 8.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ no:'<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#D95F43"/><path d="M8 8 L16 16 M16 8 L8 16" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>',
+ info:'<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#F2A34A"/><rect x="10.7" y="10" width="2.6" height="7" rx="1.3" fill="#fff"/><circle cx="12" cy="6.8" r="1.7" fill="#fff"/></svg>'
+};
+function showFeedback(o){
+ const md=$('#md-feedback');
+ $('#fb-icon').className='fb-icon '+(o.kind==='ok'?'ok':(o.kind==='no'?'no':'hint'));
+ $('#fb-icon').innerHTML= FB_ICON[o.kind]||FB_ICON.info;
+ $('#fb-title').className='fb-title '+(o.kind==='ok'?'ok':(o.kind==='no'?'no':'hint'));
+ $('#fb-title').textContent=o.title;
+ $('#fb-text').textContent=o.text;
+ const kn=$('#fb-know');
+ if(o.know){ kn.hidden=false; kn.innerHTML='<b>记住：</b>'+o.know; } else kn.hidden=true;
+ let fl=$('#fb-list');
+ if(!fl){ fl=document.createElement('div'); fl.id='fb-list'; fl.className='fb-list'; fl.hidden=true; kn.after(fl); }
+ if(o.listHtml){ fl.innerHTML=o.listHtml; fl.hidden=false; } else fl.hidden=true;
+ const sc=$('#fb-score');
+ if(o.score!=null){ sc.hidden=false; sc.textContent=o.scoreLabel||('安全判断 +'+o.score); } else sc.hidden=true;
+ const btns=$('#fb-btns'); btns.innerHTML='';
+ (o.buttons||[{label:'继续'}]).forEach(b=>{
+  const el=document.createElement('button');
+  el.className='btn '+(b.cls||'btn-ghost'); el.textContent=b.label;
+  el.addEventListener('click',()=>{ md.hidden=true; b.cb&&b.cb(); });
+  btns.appendChild(el);
+ });
+ md.hidden=false;
+}
+
+/* 过场 */
+let itsTimer=null;
+function showInter(title,text,iconSVG,cb){
+ $('#its-title').textContent=title; $('#its-text').textContent=text;
+ $('#its-icon').innerHTML=iconSVG||'';
+ const md=$('#md-inter'); md.hidden=false;
+ const done=()=>{ clearTimeout(itsTimer); md.hidden=true; $('#its-skip').onclick=null; cb&&cb(); };
+ $('#its-skip').onclick=done;
+ itsTimer=setTimeout(done,2600);
+}
+
+/* 关卡流程 */
+function startLevel(lv){
+ cur={lv,dec:0,attempts:0,hintUsed:false,wrongPicks:[],answered:false,decScores:[],decFirst:[]};
+ loadDecision();
+ go('scr-level');
+}
+function loadDecision(){
+ const L=LEVELS[cur.lv], D=decOf(cur.lv,cur.dec);
+ cur.attempts=0; cur.hintUsed=false; cur.wrongPicks=[]; cur.answered=false;
+ const decTotal=decCount(cur.lv);
+ $('#lv-title').textContent='第 '+(cur.lv+1)+'/5 关 · '+L.name+(decTotal>1?'（'+(cur.dec+1)+'/'+decTotal+'）':'');
+ $('#lv-score').textContent=totalScore();
+ $('#lv-story').textContent=D.story;
+ $('#lv-question').textContent=D.q;
+ $('#lv-hint-panel').hidden=true;
+ $('#lv-hint').disabled=false;
+ $('#lv-scene-note').textContent='';
+ const pill=$('#lv-pill');
+ pill.textContent=D.shake?'震动中 · 请迅速判断':'震动停止 · 冷静判断';
+ pill.classList.toggle('shaking-pill',!!D.shake);
+ const wrap=$('#lv-scene-wrap');
+ wrap.classList.toggle('shaking',!!D.shake);
+ $('#lv-scene').innerHTML=SCENES[D.scene]();
+ $$('#lv-scene .obj').forEach(el=>{
+  el.setAttribute('tabindex','0');
+  el.setAttribute('role','button');
+  const show=()=>{ if(cur.answered) return; $('#lv-scene-note').textContent='🔍 '+el.dataset.note; };
+  el.addEventListener('click',show);
+  el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); show(); } });
+ });
+ if(L.route){
+  $('#lv-options').innerHTML=''; $('#lv-route-tip').hidden=false;
+  $$('#lv-scene .zone').forEach(z=>{
+   const act=()=> onZone(z);
+   z.addEventListener('click',act);
+   z.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); act(); } });
+  });
+ } else {
+  $('#lv-route-tip').hidden=true;
+  const box=$('#lv-options'); box.innerHTML='';
+  D.opts.forEach((o,i)=>{
+   const b=document.createElement('button');
+   b.className='option-btn'; b.dataset.i=i;
+   b.innerHTML='<span class="opt-key">'+'ABC'[i]+'</span><span>'+o.t+'</span>';
+   b.addEventListener('click',()=> pick(i));
+   box.appendChild(b);
+  });
+ }
+}
+function onZone(z){
+ if(cur.answered) return;
+ const L=LEVELS[cur.lv], key=z.dataset.zone;
+ const zd=(L.zones||[]).find(z2=>z2.key===key);
+ if(zd){ pick(zd.opt); return; }
+ const note=L.zoneNotes&&L.zoneNotes[key];
+ if(note){ $('#lv-scene-note').textContent='⚠️ '+note; }
+}
+function pick(i){
+ if(cur.answered) return;
+ const D=decOf(cur.lv,cur.dec), opt=D.opts[i];
+ if(opt.ok){ onCorrect(); return; }
+ cur.attempts++;
+ cur.wrongPicks.push(i);
+ if(!LEVELS[cur.lv].route){ const btn=$('#lv-options .option-btn[data-i="'+i+'"]'); if(btn){btn.classList.add('wrong-pick');btn.disabled=true;} }
+ logWrong(cur.lv,cur.dec,opt);
+ showFeedback({
+  kind:'no', title:'需要再想想', text:opt.fb, know:D.know,
+  buttons:[
+   {label:'我再选一次', cls:'btn-primary'},
+   {label:'看懂了，继续', cls:'btn-ghost', cb:()=> giveUp()}
+  ]
+ });
+}
+function calcScore(){
+ const m=decMarks(cur.lv,cur.dec);
+ if(cur.hintUsed) return Math.round(m*0.4);
+ if(cur.attempts>0) return Math.round(m*0.6);
+ return m;
+}
+/* 提交本关成绩：只有整关全部决策完成时才调用；中途退出不提交，保留原成绩 */
+function commitLevel(){
+ const L=run.levels[cur.lv];
+ L.score=cur.decScores.reduce((a,b)=>a+(b||0),0);
+ L.done=true;
+ L.firstTry=cur.decFirst.length>0 && cur.decFirst.every(Boolean);
+}
+function onCorrect(){
+ cur.answered=true;
+ const s=calcScore();
+ cur.decScores[cur.dec]=s;
+ cur.decFirst[cur.dec]=(cur.attempts===0 && !cur.hintUsed);
+ const allAnswered = cur.dec+1>=decCount(cur.lv);
+ if(allAnswered) commitLevel();
+ stopShakeUI();
+ const D=decOf(cur.lv,cur.dec);
+ const buttons=[];
+ if(!allAnswered){ buttons.push({label:'继续下一步', cls:'btn-primary', cb:()=>{ cur.dec++; loadDecision(); }}); }
+ else if(cur.lv===4){ buttons.push({label:'查看通关总结', cls:'btn-primary', cb:()=> finishMainline()}); }
+ else { buttons.push({label:'继续', cls:'btn-primary', cb:()=> afterLevel(true)}); }
+ showFeedback({kind:'ok',title:'判断正确',text:D.opts.find(o=>o.ok).fb,know:D.know,score:s,buttons});
+}
+function giveUp(){
+ cur.answered=true;
+ cur.decScores[cur.dec]=0;
+ cur.decFirst[cur.dec]=false;
+ const allAnswered=cur.dec+1>=decCount(cur.lv);
+ if(allAnswered) commitLevel();
+ stopShakeUI();
+ if(!allAnswered){ cur.dec++; loadDecision(); }
+ else if(cur.lv===4){ finishMainline(); }
+ else { afterLevel(false); }
+}
+function stopShakeUI(){
+ $('#lv-scene-wrap').classList.remove('shaking');
+ const pill=$('#lv-pill');
+ pill.textContent='判断完成'; pill.classList.remove('shaking-pill');
+}
+function afterLevel(fromCorrect){
+ const L=LEVELS[cur.lv];
+ const goClear=()=>{
+  $('#lc-name').textContent='第 '+(cur.lv+1)+' 关 · '+L.name+' 完成';
+  $('#lc-score').textContent='+'+run.levels[cur.lv].score;
+  $('#lc-know').textContent=decOf(cur.lv,0).know;
+  $('#lc-total').textContent=mainScore();
+  const news=refreshBadges();
+  const nb=$('#lc-badges');
+  if(news.length){ nb.hidden=false; nb.innerHTML=news.map(b=>'<span class="nb">🏅 解锁「'+b.nm+'」</span>').join(''); }
+  else nb.hidden=true;
+  $('#lc-next').textContent='下一关：第 '+(cur.lv+2)+' 关 · '+LEVELS[cur.lv+1].name;
+  $('#lc-next').onclick=()=> startLevel(cur.lv+1);
+  go('scr-levelclear');
+ };
+ if(fromCorrect && L.after==='classroom'){
+  showInter('震动停止','听从老师指挥，有序走安全通道，不推挤、不奔跑。',
+   '<svg width="54" height="54" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#2E9E5B"/><path d="M7 12.5 L10.5 16 L17 8.5" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>', goClear);
+ } else if(fromCorrect && L.after==='orderly'){
+  showInter('先保护，再有序疏散','人群由混乱转为有序：震动停止后，听从工作人员指挥，有序撤离。',
+   '<svg width="54" height="54" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#1FA6A0"/><path d="M6 12 h9 M12 8 l4 4 -4 4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>', goClear);
+ } else goClear();
+}
+function finishMainline(){
+ const news=refreshBadges();
+ $('#mc-total').textContent=mainScore();
+ const nb=$('#mc-badges');
+ if(news.length){ nb.hidden=false; nb.innerHTML=news.map(b=>'<span class="nb">🏅 解锁「'+b.nm+'」</span>').join(''); }
+ else nb.hidden=true;
+ go('scr-mainclear');
+}
+
+$('#lv-hint').addEventListener('click',()=>{
+ if(!cur||cur.answered||cur.hintUsed) return;
+ cur.hintUsed=true;
+ $('#lv-hint').disabled=true;
+ const D=decOf(cur.lv,cur.dec);
+ const p=$('#lv-hint-panel'); p.innerHTML='💡 '+D.hint; p.hidden=false;
+ if(LEVELS[cur.lv].route){ const zo=$('#lv-scene [data-zone="z-open"] .z-line'); if(zo) zo.classList.add('hint-flash'); }
+ else { $$('#lv-scene .obj').forEach(el=>{ el.classList.add('hint-flash'); setTimeout(()=>el.classList.remove('hint-flash'),3200); }); }
+ toast('已使用提示：本题答对最高得 40% 分数');
+});
+$('#lv-back').addEventListener('click',()=>{
+ if(cur && !cur.answered){
+  confirmDlg('放弃本题？','现在返回地图，本题将按未作答处理，本题不计分。','放弃返回',()=> go('scr-map'));
+ } else go('scr-map');
+});
+
+/* 错题记录 */
+function logWrong(lv,dec,opt){
+ const L=LEVELS[lv], D=decOf(lv,dec);
+ const scene='第 '+(lv+1)+' 关 · '+L.name+(decCount(lv)>1?(' · '+(dec===0?'决策一':'决策二')):'');
+ const correct=D.opts.find(o=>o.ok).t;
+ const key=decKey(lv,dec);
+ const old=run.wrongLog.findIndex(w=>w.key===key);
+ const entry={key,lv,scene,chosen:opt.t,correct,why:D.why};
+ if(old>=0) run.wrongLog[old]=entry; else run.wrongLog.push(entry);
+}
+
+/* 徽章 */
+function refreshBadges(){
+ const before=Object.assign({},run.badges);
+ const l=run.levels;
+ if(l[0].firstTry&&l[1].firstTry&&l[2].firstTry&&l[3].firstTry) run.badges.calm=true;
+ if(run.minis.a.st==='done'&&run.minis.a.score>=50) run.badges.scout=true;
+ if(run.minis.b.st==='done'&&run.minis.b.allOk) run.badges.packer=true;
+ if(run.minis.c.st==='done'&&run.minis.c.safeCount>=4) run.badges.signaler=true;
+ if(l.every(x=>x.done)) run.badges.guardian=true;
+ return BADGES.filter(b=>run.badges[b.id]&&!before[b.id]);
+}
+
+/* 地图渲染 */
+function renderMap(){
+ $('#map-score').textContent=totalScore();
+ const done=run.levels.filter(l=>l.done).length;
+ $('#map-progress').textContent='已完成 '+done+'/5 关';
+ $('#map-bar').style.width=(done/5*100)+'%';
+ const list=$('#map-list'); list.innerHTML='';
+ LEVELS.forEach((L,i)=>{
+  const unlocked = i===0 || run.levels[i-1].done;
+  const st = run.levels[i].done?'done':(unlocked?'unlocked':'locked');
+  const node=document.createElement('button');
+  node.className='node '+st;
+  const side = run.levels[i].done ? ('+'+run.levels[i].score+' 分<br>点击重玩')
+             : unlocked ? '开始挑战' : '🔒 未解锁';
+  node.innerHTML='<span class="node-dot">'+(run.levels[i].done?'✓':(i+1))+'</span>'+
+   '<span class="node-body"><span style="flex:1"><span class="node-name">'+L.name+'</span><div class="node-tag">'+L.tag+'</div></span>'+
+   '<span class="node-side '+(unlocked?'':'locked-t')+'">'+side+'</span></span>';
+  node.addEventListener('click',()=>{
+   if(!unlocked){ toast('先完成上一关，就能解锁这里'); return; }
+   startLevel(i);
+  });
+  list.appendChild(node);
+ });
+}
+</script>
+<script>
+"use strict";
+/* 小游戏 */
+/* 小游戏 A：安全隐患找茬 */
+let maFound=new Set();
+let maTimer=null;      /* 自动结算定时器 */
+let maSettled=false;   /* 结算状态锁：防止自动/手动/返回重复结算 */
+function openMiniA(){
+ maFound=new Set(); maSettled=false; clearTimeout(maTimer);
+ $('#ma-scene').innerHTML=sceneRoomHz();
+ $$('#ma-scene .hotspot').forEach(h=>{
+  h.addEventListener('click',()=> onHz(h));
+  h.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); onHz(h); } });
+ });
+ maCount();
+ go('scr-minia');
+}
+function maCount(){
+ $('#ma-count').textContent=maFound.size+'/5';
+ $('#ma-count2').textContent=maFound.size;
+}
+function onHz(h){
+ if(maSettled) return;
+ const id=h.dataset.hz;
+ if(maFound.has(id)){ toast('这里已经检查过啦'); return; }
+ maFound.add(id);
+ h.classList.add('found');
+ const item=MINI_A.find(x=>x.id===id);
+ toast('✓ '+item.fb,2600);
+ maCount();
+ if(maFound.size>=5){ clearTimeout(maTimer); maTimer=setTimeout(settleA,800); }
+}
+function settleA(){
+ if(maSettled) return;                 /* 结算锁 */
+ if(!document.getElementById('scr-minia').classList.contains('on')) return; /* 已离开本页不再结算 */
+ maSettled=true; clearTimeout(maTimer);
+ const score=maFound.size*10;
+ run.minis.a={st:'done',score};
+ refreshBadges();
+ showFeedback({
+  kind:'ok', title:'检查完成！',
+  text:'检查完成！防震准备不只发生在地震时，也发生在平时。固定家具、降低重物、检查悬挂物、保持通道畅通，都能帮助降低风险。',
+  score, scoreLabel:'本游戏得分 +'+score+' / 50',
+  buttons:[
+   {label:'再玩一次', cls:'btn-ghost', cb:openMiniA},
+   {label:'返回附加挑战', cls:'btn-primary', cb:()=>go('scr-minihub')},
+   {label:'查看最终成绩', cls:'btn-ghost', cb:()=>go('scr-result')}
+  ]
+ });
+}
+$('#ma-finish').addEventListener('click',()=>{ clearTimeout(maTimer); settleA(); });
+$('#ma-skip').addEventListener('click',()=>{ clearTimeout(maTimer); skipMini('a'); });
+$('#ma-back').addEventListener('click',()=>{
+ clearTimeout(maTimer);
+ if(maFound.size>0 && !maSettled) confirmDlg('返回列表？','本次尚未结算的寻找进度不会保留，已结算的历史成绩不受影响。','返回',()=>go('scr-minihub'));
+ else go('scr-minihub');
+});
+
+/* 小游戏 B：应急背包整理 */
+let mbSel=new Set();
+function openMiniB(){
+ mbSel=new Set();
+ renderMb();
+ go('scr-minib');
+}
+function renderMb(){
+ const g=$('#mb-grid'); g.innerHTML='';
+ MINI_B.forEach(it=>{
+  const c=document.createElement('button');
+  c.className='item-card'+(mbSel.has(it.id)?' sel':'');
+  c.innerHTML=iconItem(it.id)+'<span class="nm">'+it.nm+'</span>'+
+   '<span class="mark"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+  c.addEventListener('click',()=>{ mbSel.has(it.id)?mbSel.delete(it.id):mbSel.add(it.id); renderMb(); });
+  g.appendChild(c);
+ });
+ $('#mb-count').textContent=mbSel.size; $('#mb-count2').textContent=mbSel.size;
+ $('#mb-chips').innerHTML=[...mbSel].map(id=>'<span>'+MINI_B.find(x=>x.id===id).nm+'</span>').join('');
+}
+function settleB(){
+ const badSel=MINI_B.filter(it=>!it.ok&&mbSel.has(it.id));
+ const missed=MINI_B.filter(it=>it.ok&&!mbSel.has(it.id));
+ const okN=MINI_B.filter(it=>it.ok&&mbSel.has(it.id)).length;
+ const score=okN*10;
+ run.minis.b={st:'done',score,allOk:okN===5};
+ refreshBadges();
+ let list='';
+ if(badSel.length) list+=badSel.map(it=>'<div class="fl-item"><b>误选「'+it.nm+'」：</b>'+it.why+'</div>').join('');
+ if(missed.length) list+=missed.map(it=>'<div class="fl-item miss"><b>还可以补充：</b>'+it.nm+'（属于应急包物品）</div>').join('');
+ showFeedback({
+  kind:'ok', title:'整理完成！',
+  text:'整理完成！应急物资应结合家庭成员需求配置，并定期检查食品、药品和电池的有效状态。还可根据实际情况准备必要证件信息、应急联系信息和其他家庭必需品。',
+  score, scoreLabel:'本游戏得分 +'+score+' / 50', listHtml:list,
+  buttons:[
+   {label:'再玩一次', cls:'btn-ghost', cb:openMiniB},
+   {label:'返回附加挑战', cls:'btn-primary', cb:()=>go('scr-minihub')},
+   {label:'查看最终成绩', cls:'btn-ghost', cb:()=>go('scr-result')}
+  ]
+ });
+}
+$('#mb-done').addEventListener('click',settleB);
+$('#mb-skip').addEventListener('click',()=> skipMini('b'));
+$('#mb-back').addEventListener('click',()=>{
+ if(mbSel.size>0) confirmDlg('返回列表？','本次尚未结算的选择不会保留，已结算的历史成绩不受影响。','返回',()=>go('scr-minihub'));
+ else go('scr-minihub');
+});
+
+/* 小游戏 C：被困求救判断 */
+let mcSel=new Set();
+function openMiniC(){
+ mcSel=new Set();
+ $('#mc-scene').innerHTML=sceneTrapped();
+ renderMc();
+ go('scr-minic');
+}
+function renderMc(){
+ const g=$('#mc-grid'); g.innerHTML='';
+ MINI_C.forEach(it=>{
+  const c=document.createElement('button');
+  c.className='item-card'+(mcSel.has(it.id)?' sel':'');
+  c.innerHTML='<span class="nm" style="font-size:13.5px">'+it.nm+'</span>'+
+   '<span class="mark"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M5 12.5 L10 17.5 L19 7" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+  c.addEventListener('click',()=>{ mcSel.has(it.id)?mcSel.delete(it.id):mcSel.add(it.id); renderMc(); });
+  g.appendChild(c);
+ });
+ $('#mc-count').textContent=mcSel.size;
+}
+function settleC(){
+ const safeSelN=MINI_C.filter(it=>it.ok&&mcSel.has(it.id)).length;
+ const badSel=MINI_C.filter(it=>!it.ok&&mcSel.has(it.id));
+ const missed=MINI_C.filter(it=>it.ok&&!mcSel.has(it.id));
+ const score=safeSelN*10;
+ run.minis.c={st:'done',score,safeCount:safeSelN};
+ refreshBadges();
+ let list='';
+ if(badSel.length) list+=badSel.map(it=>'<div class="fl-item"><b>危险选择「'+it.nm+'」：</b>'+it.why+'</div>').join('');
+ if(missed.length) list+=missed.map(it=>'<div class="fl-item miss"><b>建议选入：</b>'+it.nm+'</div>').join('');
+ if(!run.badges.signaler) list+='<div class="fl-item miss"><b>徽章条件：</b>选中至少 4 项安全行动，可解锁「求救信号员」。</div>';
+ showFeedback({
+  kind:'ok', title:'求救训练完成！',
+  text:'求救训练完成！被困时要尽量保持冷静、保存体力、注意呼吸安全，并在条件允许时向外界发出求救信号。切勿盲目移动不稳定的重物。真实情况应以救援人员和权威应急指引为准。',
+  score, scoreLabel:'本游戏得分 +'+score+' / 50', listHtml:list,
+  buttons:[
+   {label:'再玩一次', cls:'btn-ghost', cb:openMiniC},
+   {label:'返回附加挑战', cls:'btn-primary', cb:()=>go('scr-minihub')},
+   {label:'查看最终成绩', cls:'btn-ghost', cb:()=>go('scr-result')}
+  ]
+ });
+}
+$('#mc-done').addEventListener('click',settleC);
+$('#mc-skip').addEventListener('click',()=> skipMini('c'));
+$('#mc2-back').addEventListener('click',()=>{
+ if(mcSel.size>0) confirmDlg('返回列表？','本次尚未结算的选择不会保留，已结算的历史成绩不受影响。','返回',()=>go('scr-minihub'));
+ else go('scr-minihub');
+});
+function skipMini(k){
+ if(run.minis[k].st==='idle'){ run.minis[k].st='skipped'; toast('已跳过本游戏，不扣分'); }
+ go('scr-minihub');
+}
+
+/* 小游戏选择页 */
+const MINI_HUB=[
+ {k:'a', nm:'安全隐患找茬', ds:'点击房间里的 5 个风险点，学习震前家庭安全检查。', ic:()=>iconBadge('scout')},
+ {k:'b', nm:'应急背包整理师', ds:'把适合放入应急包的物品选出来，认识家庭应急物资类别。', ic:()=>iconBadge('packer')},
+ {k:'c', nm:'被困求救判断', ds:'在模拟被困情景中，选出更安全的自救与求救行动。', ic:()=>iconBadge('signaler')}
+];
+function renderHub(){
+ $('#mh-total').textContent=totalScore();
+ const list=$('#mh-list'); list.innerHTML='';
+ MINI_HUB.forEach(m=>{
+  const st=run.minis[m.k].st;
+  const pill= st==='done' ? '<span class="mini-status done">已完成 · '+run.minis[m.k].score+' 分</span>'
+            : st==='skipped' ? '<span class="mini-status skip">已跳过</span>'
+            : '<span class="mini-status todo">未挑战</span>';
+  const btnTxt= st==='done' ? '重玩刷新成绩' : (st==='skipped'?'重新进入':'开始挑战');
+  const card=document.createElement('div');
+  card.className='mini-card';
+  card.innerHTML='<div class="mc-head"><span class="mc-ic">'+m.ic()+'</span><h4>'+m.nm+'</h4>'+pill+'</div><p>'+m.ds+'</p>';
+  const b=document.createElement('button');
+  b.className='btn btn-primary'; b.textContent=btnTxt;
+  b.addEventListener('click',()=> ({a:openMiniA,b:openMiniB,c:openMiniC})[m.k]());
+  card.appendChild(b);
+  list.appendChild(card);
+ });
+}
+
+/* 最终成绩页 */
+function renderResult(){
+ const t=totalScore();
+ $('#rs-total').textContent=t;
+ $('#rs-bar').style.width=(t/650*100)+'%';
+ const grade= t<250? ['防震新手','你已经迈出学习的第一步。回顾知识卡，再挑战一次，熟悉不同场景中的安全做法。']
+             : t<450? ['冷静行动派','你已经掌握不少关键做法。看看错题复盘，继续巩固容易忽略的细节。']
+             : ['防震知识达人','你在本次挑战中表现不错。把这些知识带回家，和家人一起检查隐患、准备应急物资。'];
+ $('#rs-grade-name').textContent=grade[0];
+ $('#rs-grade-desc').textContent=grade[1];
+ const mainDone=run.levels.filter(l=>l.done).length;
+ $('#rs-main').textContent=mainDone+'/5';
+ const miniDone=['a','b','c'].filter(k=>run.minis[k].st==='done').length;
+ const miniSkip=['a','b','c'].filter(k=>run.minis[k].st==='skipped').length;
+ $('#rs-minis').textContent=miniDone+'/3';
+ refreshBadges();
+ const gotN=BADGES.filter(b=>run.badges[b.id]).length;
+ $('#rs-badge-count').textContent=gotN+'/5';
+ $('#rs-badge-wall').innerHTML=BADGES.map(b=>{
+  const got=run.badges[b.id];
+  return '<div class="badge-item '+(got?'got':'locked')+'"><span class="b-icon">'+iconBadge(b.id)+'</span>'+
+   '<span class="b-name">'+b.nm+'</span><span class="b-cond">'+(got?'已解锁':b.cond)+'</span></div>';
+ }).join('');
+ const rv=$('#rs-review');
+ if(run.wrongLog.length===0){
+  rv.innerHTML='<div class="empty-tip">本轮主线没有需要复习的错题。建议仍然查看知识卡，并与家人一起检查家中安全隐患。</div>';
+ } else {
+  rv.innerHTML='';
+  run.wrongLog.forEach(w=>{
+   const card=document.createElement('div');
+   card.className='review-card';
+   card.innerHTML='<div class="rv-scene">'+w.scene+'</div>'+
+    '<div class="rv-line">你的选择：<b class="bad">'+w.chosen+'</b></div>'+
+    '<div class="rv-line">正确做法：<b class="good">'+w.correct+'</b></div>'+
+    '<div class="rv-why">'+w.why+'</div>';
+   const b=document.createElement('button');
+   b.className='btn btn-primary btn-sm'; b.style.alignSelf='flex-start'; b.textContent='重玩这一关';
+   b.addEventListener('click',()=> startLevel(w.lv));
+   card.appendChild(b);
+   rv.appendChild(card);
+  });
+ }
+ const tip=$('#rs-mini-tip');
+ if(miniDone<3){
+  tip.hidden=false;
+  tip.querySelector('span').innerHTML='<b>附加训练未完成，可随时补充挑战。</b>'+
+   (miniSkip>0? '已跳过 '+miniSkip+' 项（不计分，不算失败）。':'')+'跳过的项目不计分，也不会记为失败。';
+ } else tip.hidden=true;
+}
+
+/* 知识卡 */
+function renderCards(){
+ $('#cd-list').innerHTML=CARDS8.map((c,i)=>
+  '<div class="kcard"><span class="kn">'+(i+1)+'</span><span><div class="kt">'+c.t+'</div><div class="kd">'+c.d+'</div></span></div>').join('');
+}
+
+/* 重开与全局绑定 */
+function restart(){
+ run=freshRun(); cur=null;
+ renderMap();
+ go('scr-intro');
+}
+$('#btn-start').addEventListener('click',()=> go('scr-intro'));
+$('#btn-howto').addEventListener('click',()=>{ $('#md-howto').hidden=false; });
+$('#howto-ok').addEventListener('click',()=>{ $('#md-howto').hidden=true; go('scr-intro'); });
+$('#btn-to-map').addEventListener('click',()=> go('scr-map'));
+$('#mc-to-minis').addEventListener('click',()=> go('scr-minihub'));
+$('#mc-to-result').addEventListener('click',()=> go('scr-result'));
+$('#mh-to-result').addEventListener('click',()=> go('scr-result'));
+$('#rs-to-minis').addEventListener('click',()=> go('scr-minihub'));
+$('#rs-to-cards').addEventListener('click',()=> go('scr-cards'));
+$('#rs-restart').addEventListener('click',restart);
+$('#cd-restart').addEventListener('click',restart);
+$('#cd-save').addEventListener('click',()=> window.print());
+$('#cd-back').addEventListener('click',()=> go('scr-result'));
+$('#cd-sources').addEventListener('click',()=> go('scr-sources'));
+$('#src-back').addEventListener('click',()=> go('scr-cards'));
+$('#src-back2').addEventListener('click',()=> go('scr-cards'));
+
+/* 启动 */
+renderMap();
+go('scr-cover');
+</script>
+</body>
+</html>
